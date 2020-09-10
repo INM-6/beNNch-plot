@@ -1,8 +1,10 @@
 import pandas as pd
-from matplotlib.rcParams import update as update_matplotlib
+import matplotlib
 from matplotlib import pyplot as plt
 import re
 import os
+import plot_params as pp
+
 
 class Bench_Plot():
     '''
@@ -29,27 +31,30 @@ class Bench_Plot():
     additional_params : dict
         additional parameters used for plotting
    '''
+
     def __init__(self, data_hash, x_axis, y_axis, log_x_axis, log_y_axis,
-                 fill_variables, matplotlib_params, color_params,
-                 additional_params):
+                 fill_variables, matplotlib_params=pp.matplotlib_params,
+                 color_params=pp.color_params,
+                 additional_params=pp.additional_params,
+                 label_params=pp.label_params):
         '''
         Initialize attributes. Use attributes to set up figure.
         '''
-        computing_resources = ['num_omp_threads',
-                               'num_mpi_tasks',
-                               'num_nodes']
-        measurements_general = ['wall_time_total',
-                                'wall_time_preparation',
-                                'wall_time_presim',
-                                'wall_time_creation',
-                                'wall_time_connect',
-                                'wall_time_sim',
-                                'wall_time_phase_total',
-                                'wall_time_phase_update',
-                                'wall_time_phase_collocate',
-                                'wall_time_phase_communicate',
-                                'wall_time_phase_deliver',
-                                'max_memory']
+        # computing_resources = ['num_omp_threads',
+        #                        'num_mpi_tasks',
+        #                        'num_nodes']
+        # measurements_general = ['wall_time_total',
+        #                         'wall_time_preparation',
+        #                         'wall_time_presim',
+        #                         'wall_time_creation',
+        #                         'wall_time_connect',
+        #                         'wall_time_sim',
+        #                         'wall_time_phase_total',
+        #                         'wall_time_phase_update',
+        #                         'wall_time_phase_collocate',
+        #                         'wall_time_phase_communicate',
+        #                         'wall_time_phase_deliver',
+        #                         'max_memory']
 
         if type(y_axis) is str:
             y_axis = [y_axis]
@@ -63,6 +68,7 @@ class Bench_Plot():
         self.matplotlib_params = matplotlib_params
         self.color_params = color_params
         self.additional_params = additional_params
+        self.label_params=label_params
 
         # Load data
         if type(data_hash) is str:
@@ -72,7 +78,8 @@ class Bench_Plot():
 
         for dhash in data_hash:
             suffix = '/path/to/data.csv'
-            data_path = os.path.join(data_hash, suffix)
+            data_path = os.path.join(dhash, suffix)
+            data_path = '/Users/work/Projects/MAM_benchmarking/BenchPlot/test.csv'
 
             try:
                 data = pd.read_csv(data_path)
@@ -83,7 +90,8 @@ class Bench_Plot():
             data_frames.append(data)
 
         self.df = pd.concat(data_frames)
-
+        # import IPython
+        # IPython.embed()
         # Compute derived quantities
         self.df['real_time_factor'] = (self.df['wall_time_total']
                                        / self.df['model_time_sim']
@@ -92,15 +100,16 @@ class Bench_Plot():
                                           / self.df['model_time_sim']
                                           / 1000)  # ms to s
         self.df['phase_communicate_factor'] = (self.df[
-                                                'wall_time_phase_communicate']
-                                                 / self.df['model_time_sim']
-                                                 / 1000)  # ms to s
+            'wall_time_phase_communicate']
+            / self.df['model_time_sim']
+            / 1000)  # ms to s
         self.df['phase_deliver_factor'] = (self.df['wall_time_phase_deliver']
                                            / self.df['model_time_sim']
                                            / 1000)  # ms to s
 
         # Change matplotlib defaults
-        update_matplotlib(matplotlib_params)
+        # update_matplotlib(matplotlib_params)
+        matplotlib.rcParams.update(matplotlib_params)
 
         # Determine number of subplots
         num_subplots = len(y_axis)
@@ -112,10 +121,27 @@ class Bench_Plot():
         # Set up figure
         fig, ax = plt.subplots(1, num_subplots, figsize=figsize)
 
-        for index, y in enumerate(y_axis):
-            ax[index].plot(self.df[x_axis[index]],
-                           self.df[y],
-                           label=self.label_dict[y],
-                           color=self.color_dict[y])
+        if num_subplots > 1:
+            for index, y in enumerate(y_axis):
+                ax[index].plot(self.df[x_axis],
+                               self.df[y],
+                               label=self.label_params[y],
+                               color=self.color_params[y])
+        else:
+            ax.plot(self.df[x_axis],
+               self.df[y_axis[0]],
+               label=self.label_params[y_axis[0]],
+               color=self.color_params[y_axis[0]])
+        plt.show()
 
+if __name__ == '__main__':
 
+    Bench_Plot(
+        'trash',
+        x_axis='num_nodes',
+        y_axis=['wall_time_sim'],
+        log_x_axis=False,
+        log_y_axis=False,
+        fill_variables=['wall_time_phase_communicate',
+                        'wall_time_phase_update', 'wall_time_phase_deliver']
+    )
