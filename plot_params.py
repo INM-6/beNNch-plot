@@ -20,11 +20,15 @@ additional_params = {
 
 color_params = {
     'wall_time_total': '#bebebe', # Black
+    'real_time_factor': '#bebebe', # Black
     'wall_time_sim': '#ff9f9a', # Peach
     'wall_time_creation+wall_time_connect': '#64b5cd', # Light Blue
     'wall_time_phase_update': '#c44e52', # Brownish red
     'wall_time_phase_deliver': '#4c72b0', # Dark Blue
     'wall_time_phase_communicate': '#55a868', # Light green
+    'frac_phase_update': '#c44e52', # Brownish red
+    'frac_phase_deliver': '#4c72b0', # Dark Blue
+    'frac_phase_communicate': '#55a868', # Light green
     }
 
 label_params = {
@@ -44,6 +48,9 @@ label_params = {
     'wall_time_phase_deliver': 'deliver',
     'max_memory': 'memory',
     'real_time_factor': 'real time factor',
+    'frac_phase_update': 'update',
+    'frac_phase_communicate': 'communicate',
+    'frac_phase_deliver': 'deliver',
     'phase_update_factor': 'update factor',
     'phase_communicate_factor': 'communicate factor',
     'phase_deliver_factor': 'deliver factor',
