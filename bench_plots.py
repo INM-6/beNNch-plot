@@ -85,8 +85,8 @@ class Bench_Plot():
         for dhash in data_hash:
             suffix = '/path/to/data.csv'
             data_path = os.path.join(dhash, suffix)
-            data_path = '/Users/work/Projects/MAM_benchmarking/BenchPlot/test.csv'
-            # data_path = 'microcircuit_data.csv'
+            # data_path = 'multiareamodel_data.csv'
+            data_path = 'microcircuit_data.csv'
 
             try:
                 data = pd.read_csv(data_path, delimiter=',')
@@ -191,12 +191,13 @@ class Bench_Plot():
         frac_plot.set_xlabel(self.x_label)
         if self.log_x_axis:
             frac_plot.set_xscale('log')
+            frac_plot.tick_params(bottom=False, which='minor')
+        frac_plot.get_xaxis().set_major_formatter(
+            matplotlib.ticker.ScalarFormatter())
         if self.x_ticks == 'data':
             frac_plot.set_xticks(self.df[self.x_axis])
         else:
             frac_plot.set_xticks(self.x_ticks)
-        frac_plot.get_xaxis().set_major_formatter(
-            matplotlib.ticker.ScalarFormatter())
 
         return frac_plot
 
@@ -214,6 +215,8 @@ class Bench_Plot():
                            color=self.color_params[y])
             main_plot.set_ylabel(self.y_label[plot_column])
 
+        if self.log_x_axis:
+            main_plot.tick_params(bottom=False, which='minor')
         if self.log_y_axis:
             main_plot.set_yscale('log')
 
@@ -222,32 +225,33 @@ class Bench_Plot():
 
 if __name__ == '__main__':
 
-    #     Bench_Plot(
-    #         data_hash='trash',
-    #         x_axis='num_omp_threads',
-    #         y_axis=[['real_time_factor']],
-    #         x_label='Threads',
-    #         y_label=[r'real-time factor $T_{\textnormal{wall}}'
-    #                  r'/T_{\textnormal{model}}$'],
-    #         log_x_axis=True,
-    #         log_y_axis=True,
-    #         fill_variables=['frac_phase_update',
-    #                         'frac_phase_communicate',
-    #                         'frac_phase_deliver'])
+        Bench_Plot(
+            data_hash='trash',
+            x_axis='num_omp_threads',
+            y_axis=[['real_time_factor']],
+            x_label='Threads',
+            y_label=[r'real-time factor $T_{\textnormal{wall}}'
+                     r'/T_{\textnormal{model}}$'],
+            log_x_axis=True,
+            log_y_axis=True,
+            fill_variables=['frac_phase_update',
+                            'frac_phase_communicate',
+                            'frac_phase_deliver'],
+            x_ticks=[1,2,4,8,16,32,64])
 
-    Bench_Plot(
-        data_hash='trash',
-        x_axis='num_nodes',
-        y_axis=[['wall_time_total', 'wall_time_sim',
-                 'wall_time_creation+wall_time_connect'],
-                ['real_time_factor']],
-        x_label='Nodes',
-        y_label=['wall time [s]', r'real-time factor $T_{\textnormal{wall}}'
-                 r'/T_{\textnormal{model}}$'],
-        log_x_axis=False,
-        log_y_axis=False,
-        fill_variables=[
-            'frac_phase_communicate',
-            'frac_phase_update',
-            'frac_phase_deliver'
-        ])
+    # Bench_Plot(
+    #     data_hash='trash',
+    #     x_axis='num_nodes',
+    #     y_axis=[['wall_time_total', 'wall_time_sim',
+    #              'wall_time_creation+wall_time_connect'],
+    #             ['real_time_factor']],
+    #     x_label='Nodes',
+    #     y_label=['wall time [s]', r'real-time factor $T_{\textnormal{wall}}'
+    #              r'/T_{\textnormal{model}}$'],
+    #     log_x_axis=False,
+    #     log_y_axis=False,
+    #     fill_variables=[
+    #         'frac_phase_communicate',
+    #         'frac_phase_update',
+    #         'frac_phase_deliver'
+    #     ])
