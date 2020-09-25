@@ -14,7 +14,7 @@ matplotlib_params = {
 }
 
 additional_params = {
-    'figsize_single': [6.1*1.5, 6.1],
+    'figsize_single': [6.1 * 1.5, 6.1],
     'figsize_double': [12.2, 6.1]
     # 'figsize_double': [12.2*1.5, 6.1]
 }
@@ -33,17 +33,18 @@ additional_params = {
 #     }
 
 color_params = {
-    'wall_time_total': '#AA3377', # purple
-    'real_time_factor': '#BBBBBB', # gray
-    'wall_time_sim': '#CCBB44', # yellow
-    'wall_time_creation+wall_time_connect': '#66CCEE', # cyan
-    'wall_time_phase_update': '#EE6677', # red
-    'wall_time_phase_deliver': '#0077BB', # blue
-    'wall_time_phase_communicate': '#228833', # green
-    'frac_phase_update': '#EE6677', # red
-    'frac_phase_deliver': '#0077BB', # blue
-    'frac_phase_communicate': '#228833', # green
-    }
+    'wall_time_total': '#BBBBBB',  # gray
+    'sim_factor': '#EE7733',  # orange
+    'phase_total_factor': '#CCBB44',  # yellow
+    'wall_time_sim': '#AA3377',  # purple
+    'wall_time_creation+wall_time_connect': '#66CCEE',  # cyan
+    'wall_time_phase_update': '#EE6677',  # red
+    'wall_time_phase_deliver': '#0077BB',  # blue
+    'wall_time_phase_communicate': '#228833',  # green
+    'frac_phase_update': '#EE6677',  # red
+    'frac_phase_deliver': '#0077BB',  # blue
+    'frac_phase_communicate': '#228833',  # green
+}
 
 label_params = {
     'num_omp_threads': 'OMP threads',
@@ -55,18 +56,19 @@ label_params = {
     'wall_time_creation': 'creation',
     'wall_time_connect': 'connection',
     'wall_time_sim': 'simulation',
-    'wall_time_phase_total': 'total phase',
+    'wall_time_phase_total': 'all phases',
     'wall_time_phase_update': 'update',
     'wall_time_phase_collocate': 'collocate',
     'wall_time_phase_communicate': 'communicate',
     'wall_time_phase_deliver': 'deliver',
     'wall_time_creation+wall_time_connect': 'network construction',
     'max_memory': 'memory',
-    'real_time_factor': 'real time factor',
+    'sim_factor': 'state propagation',
     'frac_phase_update': 'update',
     'frac_phase_communicate': 'communicate',
     'frac_phase_deliver': 'deliver',
     'phase_update_factor': 'update factor',
     'phase_communicate_factor': 'communicate factor',
     'phase_deliver_factor': 'deliver factor',
+    'phase_total_factor': 'all phases'
 }
