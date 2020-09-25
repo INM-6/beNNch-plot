@@ -151,8 +151,8 @@ class Bench_Plot():
                     'wall_time_creation+wall_time_connect' in self.y_axis[0]):
                 main_plot_left = self.plot_fractions(
                     fig.add_subplot(self.spec[:, 0], sharex=frac_plot),
-                    fill_variables=['wall_time_creation+wall_time_connect',
-                                    'wall_time_sim'],
+                    fill_variables=['wall_time_sim',
+                                    'wall_time_creation+wall_time_connect'],
                     interpolate=True, step=None)
                 self.y_axis[0].remove('wall_time_sim')
                 self.y_axis[0].remove('wall_time_creation+wall_time_connect')
