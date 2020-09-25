@@ -46,21 +46,6 @@ class Bench_Plot():
         '''
         Initialize attributes. Use attributes to set up figure.
         '''
-        # computing_resources = ['num_omp_threads',
-        #                        'num_mpi_tasks',
-        #                        'num_nodes']
-        # measurements_general = ['wall_time_total',
-        #                         'wall_time_preparation',
-        #                         'wall_time_presim',
-        #                         'wall_time_creation',
-        #                         'wall_time_connect',
-        #                         'wall_time_sim',
-        #                         'wall_time_phase_total',
-        #                         'wall_time_phase_update',
-        #                         'wall_time_phase_collocate',
-        #                         'wall_time_phase_communicate',
-        #                         'wall_time_phase_deliver',
-        #                         'max_memory']
 
         self.data_hash = data_hash
         self.x_axis = x_axis
@@ -85,8 +70,8 @@ class Bench_Plot():
         for dhash in data_hash:
             suffix = '/path/to/data.csv'
             data_path = os.path.join(dhash, suffix)
-            # data_path = 'multiareamodel_data.csv'
-            data_path = 'microcircuit_data.csv'
+            data_path = 'multiareamodel_data.csv'
+            # data_path = 'microcircuit_data.csv'
 
             try:
                 data = pd.read_csv(data_path, delimiter=',')
@@ -101,7 +86,10 @@ class Bench_Plot():
         # Compute derived quantities
         self.df['wall_time_creation+wall_time_connect'] = (
             self.df['wall_time_creation'] + self.df['wall_time_connect'])
-        self.df['real_time_factor'] = (self.df['wall_time_total']
+        self.df['sim_factor'] = (self.df['wall_time_sim']
+                                       / (self.df['model_time_sim']
+                                          / 1000))  # ms to s
+        self.df['phase_total_factor'] = (self.df['wall_time_phase_total']
                                        / (self.df['model_time_sim']
                                           / 1000))  # ms to s
         self.df['phase_update_factor'] = (self.df['wall_time_phase_update']
@@ -142,26 +130,38 @@ class Bench_Plot():
 
         if num_subplots == 1:
             # Plot fraction of times spent in phases
-            frac_plot = self.plot_fractions(fig)
+            frac_plot = self.plot_fractions(fig.add_subplot(self.spec[-1, 0]))
+            frac_plot.set_xlabel(self.x_label)
             frac_plot.set_ylabel(r'$T_{\textnormal{wall}}\%$')
             # Plot values specified in y_axis
-            main_plot = self.plot_main(fig, frac_plot, plot_column=0)
+            main_plot = self.plot_main(fig.add_subplot(
+                self.spec[:-1, 0], sharex=frac_plot), plot_column=0)
 
         if num_subplots == 2:
-            # cast str to list
-            if type(self.y_axis[0]) is str:
-                self.y_axis[0] = [self.y_axis[0]]
-            if type(self.y_axis[1]) is str:
-                self.y_axis[1] = [self.y_axis[1]]
-
             # Plot fraction of times spent in phases
-            frac_plot = self.plot_fractions(fig)
+            frac_plot = self.plot_fractions(fig.add_subplot(self.spec[-1, 1]))
+            frac_plot.set_xlabel(self.x_label)
             frac_plot.set_ylabel(r'$T_{\textnormal{wall}}\%$')
-            
+
             # Plot values specified in y_axis
-            main_plot = self.plot_main(fig, frac_plot, plot_column=0)
-            main_plot_right = self.plot_main(fig, frac_plot, plot_column=1)
-            main_plot_right.legend(loc='upper right')
+            main_plot = self.plot_main(fig.add_subplot(
+                self.spec[:-1, 1], sharex=frac_plot), plot_column=1)
+
+            if ('wall_time_sim' in self.y_axis[0] and
+                    'wall_time_creation+wall_time_connect' in self.y_axis[0]):
+                main_plot_left = self.plot_fractions(
+                    fig.add_subplot(self.spec[:, 0], sharex=frac_plot),
+                    fill_variables=['wall_time_creation+wall_time_connect',
+                                    'wall_time_sim'],
+                    interpolate=True, step=None)
+                self.y_axis[0].remove('wall_time_sim')
+                self.y_axis[0].remove('wall_time_creation+wall_time_connect')
+                if self.y_axis[0]:
+                    main_plot_left = self.plot_main(main_plot_left)
+            else:
+                main_plot_left = self.plot_main(fig.add_subplot(
+                    self.spec[:, 0], sharex=frac_plot), plot_column=0)
+            main_plot_left.legend(loc='upper right')
 
         handles, labels = [(a + b) for a, b in zip(
             frac_plot.get_legend_handles_labels(),
@@ -170,25 +170,23 @@ class Bench_Plot():
         plt.tight_layout()
         plt.show()
 
-    def plot_fractions(self, fig, fill_variables=None):
-        if fill_variables == None:
+    def plot_fractions(self, frac_plot, fill_variables=None, interpolate=False,
+                       step='pre'):
+        if fill_variables is None:
             fill_variables = self.fill_variables
 
-        frac_plot = fig.add_subplot(self.spec[-1, 0])
         fill_height = 0
-
         for fill in fill_variables:
             frac_plot.fill_between(self.df[self.x_axis],
                                    fill_height,
                                    self.df[fill] + fill_height,
                                    label=self.label_params[fill],
                                    color=self.color_params[fill],
-                                   # interpolate=True,
-                                   step='pre'
+                                   interpolate=interpolate,
+                                   step=step
                                    )
             fill_height += self.df[fill].to_numpy()
 
-        frac_plot.set_xlabel(self.x_label)
         if self.log_x_axis:
             frac_plot.set_xscale('log')
             frac_plot.tick_params(bottom=False, which='minor')
@@ -201,12 +199,7 @@ class Bench_Plot():
 
         return frac_plot
 
-    def plot_main(self, fig, frac_plot, plot_column=0):
-        if plot_column == 0:
-            main_plot = fig.add_subplot(self.spec[:-1, 0], sharex=frac_plot)
-        elif plot_column == 1:
-            main_plot = fig.add_subplot(self.spec[:, 1], sharex=frac_plot)
-
+    def plot_main(self, main_plot, plot_column=0):
         for y in self.y_axis[plot_column]:
             main_plot.plot(self.df[self.x_axis],
                            self.df[y],
@@ -225,33 +218,33 @@ class Bench_Plot():
 
 if __name__ == '__main__':
 
-        Bench_Plot(
-            data_hash='trash',
-            x_axis='num_omp_threads',
-            y_axis=[['real_time_factor']],
-            x_label='Threads',
-            y_label=[r'real-time factor $T_{\textnormal{wall}}'
-                     r'/T_{\textnormal{model}}$'],
-            log_x_axis=True,
-            log_y_axis=True,
-            fill_variables=['frac_phase_update',
-                            'frac_phase_communicate',
-                            'frac_phase_deliver'],
-            x_ticks=[1,2,4,8,16,32,64])
-
     # Bench_Plot(
     #     data_hash='trash',
-    #     x_axis='num_nodes',
-    #     y_axis=[['wall_time_total', 'wall_time_sim',
-    #              'wall_time_creation+wall_time_connect'],
-    #             ['real_time_factor']],
-    #     x_label='Nodes',
-    #     y_label=['wall time [s]', r'real-time factor $T_{\textnormal{wall}}'
+    #     x_axis='num_omp_threads',
+    #     y_axis=[['sim_factor']],
+    #     x_label='Threads',
+    #     y_label=[r'real-time factor $T_{\textnormal{wall}}'
     #              r'/T_{\textnormal{model}}$'],
-    #     log_x_axis=False,
-    #     log_y_axis=False,
-    #     fill_variables=[
-    #         'frac_phase_communicate',
-    #         'frac_phase_update',
-    #         'frac_phase_deliver'
-    #     ])
+    #     log_x_axis=True,
+    #     log_y_axis=True,
+    #     fill_variables=['frac_phase_update',
+    #                     'frac_phase_communicate',
+    #                     'frac_phase_deliver'],
+    #     x_ticks=[1,2,4,8,16,32,64])
+
+    Bench_Plot(
+        data_hash='trash',
+        x_axis='num_nodes',
+        y_axis=[['wall_time_total', 'wall_time_sim',
+                 'wall_time_creation+wall_time_connect'],
+                ['sim_factor', 'phase_total_factor']],
+        x_label='Nodes',
+        y_label=['wall time [s]', r'real-time factor $T_{\textnormal{wall}}'
+                 r'/T_{\textnormal{model}}$'],
+        log_x_axis=False,
+        log_y_axis=False,
+        fill_variables=[
+            'frac_phase_communicate',
+            'frac_phase_update',
+            'frac_phase_deliver'
+        ])
