@@ -169,7 +169,7 @@ class Bench_Plot():
             main_plot.get_legend_handles_labels())]
         main_plot.legend(handles, labels, loc='upper right')
         plt.tight_layout()
-        plt.savefig(os.path.join(save_path, plot_name + '.' file_ending))
+        plt.savefig(os.path.join(save_path, plot_name + '.' + file_ending))
         if show:
             plt.show()
 
