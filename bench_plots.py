@@ -2,7 +2,6 @@ import pandas as pd
 import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
-import re
 import yaml
 import os
 import plot_params as pp
@@ -41,9 +40,11 @@ class Bench_Plot():
    '''
 
     def __init__(self, data_hash, x_axis, y_axis, x_label, y_label, log_x_axis,
-                 log_y_axis, fill_variables, x_ticks='data',
-                 data_path='/path/to/data', catalogue_path='/path/to/catalogue.yaml',
+                 log_y_axis, fill_variables, x_ticks='data', x_socket=None,
+                 x_node=None, show=True, data_path='/path/to/data',
+                 catalogue_path='/path/to/catalogue.yaml',
                  save_path='/path/to/save/plots',
+                 file_ending='pdf',
                  matplotlib_params=pp.matplotlib_params,
                  color_params=pp.color_params,
                  additional_params=pp.additional_params,
@@ -61,6 +62,8 @@ class Bench_Plot():
         self.log_y_axis = log_y_axis
         self.fill_variables = fill_variables
         self.x_ticks = x_ticks
+        self.x_socket = x_socket
+        self.x_node = x_node
         self.matplotlib_params = matplotlib_params
         self.color_params = color_params
         self.additional_params = additional_params
@@ -166,8 +169,9 @@ class Bench_Plot():
             main_plot.get_legend_handles_labels())]
         main_plot.legend(handles, labels, loc='upper right')
         plt.tight_layout()
-        plt.savefig(os.path.join(save_path, plot_name + '.pdf'))
-        plt.show()
+        plt.savefig(os.path.join(save_path, plot_name + '.' file_ending))
+        if show:
+            plt.show()
 
     def plot_fractions(self, frac_plot, fill_variables=None, interpolate=False,
                        step='pre'):
@@ -207,10 +211,21 @@ class Bench_Plot():
                            color=self.color_params[y])
             main_plot.set_ylabel(self.y_label[plot_column])
 
+        if self.x_socket:
+            main_plot.axvline(self.x_socket, color='grey')
+        if self.x_node:
+            main_plot.axvline(self.x_node, color='black')
+        main_plot.axhline(1, color='r')
+
+
         if self.log_x_axis:
             main_plot.tick_params(bottom=False, which='minor')
         if self.log_y_axis:
             main_plot.set_yscale('log')
+            main_plot.set_ylim(0.1, 200)
+            main_plot.yaxis.set_major_formatter(
+                    matplotlib.ticker.ScalarFormatter()
+                    )
 
         return main_plot
 

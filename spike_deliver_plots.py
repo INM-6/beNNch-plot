@@ -12,19 +12,23 @@ hashes = ['4fb0adec2be4b339fa5d376144af67b1b94d850b5258d2991602299e0692fc24',
           'c8ef5e016b3ddc9f190001d6522f4c810b77f3e3a78495c0a18f81d1d9b14f33',
           'ef97d01bacc4b7fd11a52a04788321f34bad6d573df42f1e6390ea2cf1369a21']
 
-bench_plots.Bench_Plot(
-    data_hash=hashes[0],
-    x_axis='num_nvp',
-    y_axis=[['sim_factor']],
-    x_label='NVP',
-    y_label=[r'real-time factor $T_{\textnormal{wall}}'
-             r'/T_{\textnormal{model}}$'],
-    log_x_axis=True,
-    log_y_axis=True,
-    data_path='../data_spike_delivery_profiling/',
-    catalogue_path='../catalogue.yaml',
-    save_path='../plots_spike_delivery2',
-    fill_variables=['frac_phase_update',
-                    'frac_phase_communicate',
-                    'frac_phase_deliver'],
-    x_ticks=[1,2,4,8,16,32,64])
+for data_hash in hashes:
+    bench_plots.Bench_Plot(
+        data_hash=data_hash,
+        x_axis='num_nvp',
+        y_axis=[['sim_factor']],
+        x_label='NVP',
+        y_label=[r'real-time factor $T_{\textnormal{wall}}'
+                 r'/T_{\textnormal{model}}$'],
+        log_x_axis=True,
+        log_y_axis=True,
+        data_path='../data_spike_delivery_profiling/',
+        catalogue_path='../catalogue.yaml',
+        save_path='../plots_spike_delivery',
+        fill_variables=['frac_phase_update',
+                        'frac_phase_communicate',
+                        'frac_phase_deliver'],
+        x_socket=12,
+        x_node=24,
+        show=False,
+        x_ticks=[1, 2, 3, 4, 5, 6, 8, 10, 12, 24, 2*24, 4*24, 8*24, 16*24, 32*24])
