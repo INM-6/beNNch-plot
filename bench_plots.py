@@ -84,6 +84,9 @@ class Bench_Plot():
         self.df = pd.concat(data_frames)
 
         # Compute derived quantities
+        self.df['num_nvp'] = (
+                self.df['num_omp_threads'] * self.df['num_mpi_tasks']
+                )
         self.df['wall_time_creation+wall_time_connect'] = (
             self.df['wall_time_creation'] + self.df['wall_time_connect'])
         self.df['sim_factor'] = (self.df['wall_time_sim']
