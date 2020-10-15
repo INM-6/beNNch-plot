@@ -3,6 +3,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
 import re
+import yaml
 import os
 import plot_params as pp
 
@@ -29,6 +30,8 @@ class Bench_Plot():
         display y axis in log scale
     fill_variables : list
         variables (e.g. timers) to be plotted as fill  between graph and x axis
+    data_path : str
+        Path to folder containing data
     matplotlib_params : dict
         parameters passed to matplotlib
     color_params : dict
@@ -39,6 +42,8 @@ class Bench_Plot():
 
     def __init__(self, data_hash, x_axis, y_axis, x_label, y_label, log_x_axis,
                  log_y_axis, fill_variables, x_ticks='data',
+                 data_path='/path/to/data', catalogue_path='/path/to/catalogue.yaml',
+                 save_path='/path/to/save/plots',
                  matplotlib_params=pp.matplotlib_params,
                  color_params=pp.color_params,
                  additional_params=pp.additional_params,
@@ -61,27 +66,17 @@ class Bench_Plot():
         self.additional_params = additional_params
         self.label_params = label_params
 
-        # Load data
-        if type(data_hash) is str:
-            data_hash = [data_hash]
+        with open(catalogue_path, 'r') as c:
+            catalogue = yaml.load(c)
+        plot_name = catalogue[data_hash]['plot_name']
 
-        data_frames = []
+        data_path = os.path.join(data_path, data_hash + '.csv')
 
-        for dhash in data_hash:
-            suffix = '/path/to/data.csv'
-            data_path = os.path.join(dhash, suffix)
-            data_path = 'multiareamodel_data.csv'
-            # data_path = 'microcircuit_data.csv'
-
-            try:
-                data = pd.read_csv(data_path, delimiter=',')
-            except FileNotFoundError:
-                print('File could not be found')
-                quit()
-
-            data_frames.append(data)
-
-        self.df = pd.concat(data_frames)
+        try:
+            self.df = pd.read_csv(data_path, delimiter=';')
+        except FileNotFoundError:
+            print('File could not be found')
+            quit()
 
         # Compute derived quantities
         self.df['num_nvp'] = (
@@ -171,6 +166,7 @@ class Bench_Plot():
             main_plot.get_legend_handles_labels())]
         main_plot.legend(handles, labels, loc='upper right')
         plt.tight_layout()
+        plt.savefig(os.path.join(save_path, plot_name + '.pdf'))
         plt.show()
 
     def plot_fractions(self, frac_plot, fill_variables=None, interpolate=False,
@@ -221,33 +217,33 @@ class Bench_Plot():
 
 if __name__ == '__main__':
 
-    # Bench_Plot(
-    #     data_hash='trash',
-    #     x_axis='num_omp_threads',
-    #     y_axis=[['sim_factor']],
-    #     x_label='Threads',
-    #     y_label=[r'real-time factor $T_{\textnormal{wall}}'
-    #              r'/T_{\textnormal{model}}$'],
-    #     log_x_axis=True,
-    #     log_y_axis=True,
-    #     fill_variables=['frac_phase_update',
-    #                     'frac_phase_communicate',
-    #                     'frac_phase_deliver'],
-    #     x_ticks=[1,2,4,8,16,32,64])
-
     Bench_Plot(
         data_hash='trash',
-        x_axis='num_nodes',
-        y_axis=[['wall_time_total', 'wall_time_sim',
-                 'wall_time_creation+wall_time_connect'],
-                ['sim_factor', 'phase_total_factor']],
-        x_label='Nodes',
-        y_label=['wall time [s]', r'real-time factor $T_{\textnormal{wall}}'
+        x_axis='num_omp_threads',
+        y_axis=[['sim_factor']],
+        x_label='Threads',
+        y_label=[r'real-time factor $T_{\textnormal{wall}}'
                  r'/T_{\textnormal{model}}$'],
-        log_x_axis=False,
-        log_y_axis=False,
-        fill_variables=[
-            'frac_phase_communicate',
-            'frac_phase_update',
-            'frac_phase_deliver'
-        ])
+        log_x_axis=True,
+        log_y_axis=True,
+        fill_variables=['frac_phase_update',
+                        'frac_phase_communicate',
+                        'frac_phase_deliver'],
+        x_ticks=[1,2,4,8,16,32,64])
+
+    # Bench_Plot(
+    #     data_hash='trash',
+    #     x_axis='num_nodes',
+    #     y_axis=[['wall_time_total', 'wall_time_sim',
+    #              'wall_time_creation+wall_time_connect'],
+    #             ['sim_factor', 'phase_total_factor']],
+    #     x_label='Nodes',
+    #     y_label=['wall time [s]', r'real-time factor $T_{\textnormal{wall}}'
+    #              r'/T_{\textnormal{model}}$'],
+    #     log_x_axis=False,
+    #     log_y_axis=False,
+    #     fill_variables=[
+    #         'frac_phase_communicate',
+    #         'frac_phase_update',
+    #         'frac_phase_deliver'
+    #     ])
