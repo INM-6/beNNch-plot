@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from matplotlib import gridspec
 import re
 import os
-import plot_params as pp
+from . import plot_params as pp
 
 
 class Bench_Plot():
