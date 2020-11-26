@@ -1,21 +1,23 @@
+size_factor = 1.3
 matplotlib_params = {
     'text.latex.preamble': ['\\usepackage{gensymb}'],
     'image.origin': 'lower',
     'image.interpolation': 'nearest',
     'axes.grid': False,
-    'axes.labelsize': 15,
-    'axes.titlesize': 19,
-    'font.size': 16,
-    'legend.fontsize': 11,
-    'xtick.labelsize': 11,
-    'ytick.labelsize': 11,
+    'axes.labelsize': 15*size_factor,
+    'axes.titlesize': 19*size_factor,
+    'font.size': 16*size_factor,
+    'legend.fontsize': 11*size_factor,
+    'xtick.labelsize': 11*size_factor,
+    'ytick.labelsize': 11*size_factor,
+    'font.family': 'sans-serif',
+    'font.sans-serif': 'Avenir',
     'text.usetex': False,
-    'font.family': 'serif',
 }
 
 additional_params = {
     'figsize_single': [6.1 * 1.5, 6.1],
-    'figsize_double': [12.2, 6.1]
+    'figsize_double': [12.2, 6.1*1.1]
     # 'figsize_double': [12.2*1.5, 6.1]
 }
 

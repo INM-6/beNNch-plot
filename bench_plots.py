@@ -41,7 +41,10 @@ class Bench_Plot():
    '''
 
     def __init__(self, data_hash, x_axis, y_axis, x_label, y_label, log_x_axis,
-                 log_y_axis, fill_variables, x_ticks='data',
+                 log_y_axis, fill_variables, 
+                 x_ticks='data',
+                 ylim_left=None,
+                 ylim_right=None,
                  data_path='/path/to/data',
                  catalogue_path='/path/to/catalogue.yaml',
                  save_path='/path/to/save/plots',
@@ -89,21 +92,16 @@ class Bench_Plot():
         self.df['wall_time_creation+wall_time_connect'] = (
             self.df['wall_time_creation'] + self.df['wall_time_connect'])
         self.df['sim_factor'] = (self.df['wall_time_sim']
-                                       / (self.df['model_time_sim']
-                                          / 1000))  # ms to s
+                                 / self.df['model_time_sim'])
         self.df['phase_total_factor'] = (self.df['wall_time_phase_total']
-                                       / (self.df['model_time_sim']
-                                          / 1000))  # ms to s
+                                         / self.df['model_time_sim'])
         self.df['phase_update_factor'] = (self.df['wall_time_phase_update']
-                                          / (self.df['model_time_sim']
-                                             / 1000))  # ms to s
+                                          / self.df['model_time_sim'])
         self.df['phase_communicate_factor'] = (self.df[
             'wall_time_phase_communicate']
-            / self.df['model_time_sim']
-            / 1000)  # ms to s
+            / self.df['model_time_sim'])
         self.df['phase_deliver_factor'] = (self.df['wall_time_phase_deliver']
-                                           / (self.df['model_time_sim']
-                                              / 1000))  # ms to s
+                                           / self.df['model_time_sim'])
 
         self.df['frac_phase_update'] = (100 * self.df['wall_time_phase_update']
                                         / self.df['wall_time_phase_total'])
@@ -128,6 +126,7 @@ class Bench_Plot():
 
         # Set up figure
         fig = plt.figure(figsize=figsize)
+        st = fig.suptitle(plot_name)
         self.spec = gridspec.GridSpec(ncols=num_subplots, nrows=4, figure=fig)
 
         if num_subplots == 1:
@@ -145,15 +144,28 @@ class Bench_Plot():
             frac_plot = self.plot_fractions(fig.add_subplot(self.spec[-1, 1]))
             frac_plot.set_xlabel(self.x_label)
             frac_plot.set_ylabel(r'$T_{\mathrm{wall}}\%$')
+            if self.x_ticks == 'data':
+                frac_plot.set_xticks(self.df[self.x_axis])
+            else:
+                frac_plot.set_xticks(self.x_ticks)
 
             # Plot values specified in y_axis
             main_plot = self.plot_main(fig.add_subplot(
-                self.spec[:-1, 1], sharex=frac_plot), plot_column=1)
+                self.spec[:-1, 1]), plot_column=1)
+            if ylim_right is None:
+                pass
+            else:
+                main_plot.set_ylim(ylim_right)
+
+            if self.x_ticks == 'data':
+                main_plot.set_xticks(self.df[self.x_axis])
+            else:
+                main_plot.set_xticks(self.x_ticks)
 
             if ('wall_time_sim' in self.y_axis[0] and
                     'wall_time_creation+wall_time_connect' in self.y_axis[0]):
                 main_plot_left = self.plot_fractions(
-                    fig.add_subplot(self.spec[:, 0], sharex=frac_plot),
+                    fig.add_subplot(self.spec[:, 0]),
                     fill_variables=['wall_time_sim',
                                     'wall_time_creation+wall_time_connect'],
                     interpolate=True, step=None)
@@ -164,13 +176,19 @@ class Bench_Plot():
             else:
                 main_plot_left = self.plot_main(fig.add_subplot(
                     self.spec[:, 0], sharex=frac_plot), plot_column=0)
+            main_plot_left.set_xlabel(self.x_label)
             main_plot_left.legend(loc='upper right')
-            main_plot_left.set_ylim(0,1500)
+            if ylim_left is None:
+                pass
+            else:
+                main_plot_left.set_ylim(ylim_left)
 
         handles, labels = [(a + b) for a, b in zip(
             frac_plot.get_legend_handles_labels(),
             main_plot.get_legend_handles_labels())]
         main_plot.legend(handles, labels, loc='upper right')
+        st.set_y(0.95)
+        fig.subplots_adjust(top=0.87)
         plt.tight_layout()
         plt.savefig(os.path.join(save_path, plot_name + '.' + file_ending))
         plt.show()
@@ -179,6 +197,11 @@ class Bench_Plot():
                        step='pre'):
         if fill_variables is None:
             fill_variables = self.fill_variables
+
+        if self.x_ticks == 'data':
+            frac_plot.set_xticks(self.df[self.x_axis])
+        else:
+            frac_plot.set_xticks(self.x_ticks)
 
         fill_height = 0
         for fill in fill_variables:
@@ -195,12 +218,8 @@ class Bench_Plot():
         if self.log_x_axis:
             frac_plot.set_xscale('log')
             frac_plot.tick_params(bottom=False, which='minor')
-        frac_plot.get_xaxis().set_major_formatter(
-            matplotlib.ticker.ScalarFormatter())
-        if self.x_ticks == 'data':
-            frac_plot.set_xticks(self.df[self.x_axis])
-        else:
-            frac_plot.set_xticks(self.x_ticks)
+            frac_plot.get_xaxis().set_major_formatter(
+                matplotlib.ticker.ScalarFormatter())
 
         return frac_plot
 
@@ -212,6 +231,11 @@ class Bench_Plot():
                            label=self.label_params[y],
                            color=self.color_params[y])
             main_plot.set_ylabel(self.y_label[plot_column])
+
+        if self.x_ticks == 'data':
+            main_plot.set_xticks(self.df[self.x_axis])
+        else:
+            main_plot.set_xticks(self.x_ticks)
 
         if self.log_x_axis:
             main_plot.tick_params(bottom=False, which='minor')
@@ -234,8 +258,8 @@ if __name__ == '__main__':
     #     log_y_axis=True,
     #     fill_variables=['frac_phase_update',
     #                     'frac_phase_communicate',
-    #                     'frac_phase_deliver'],
-    #     x_ticks=[1,2,4,8,16,32,64])
+    #                     'frac_phase_deliver'
+    # ])
 
     Bench_Plot(
         data_hash='trash',
