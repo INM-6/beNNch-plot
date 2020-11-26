@@ -2,9 +2,12 @@ import pandas as pd
 import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
-import re
+import yaml
 import os
-import plot_params as pp
+try:
+    from . import plot_params as pp
+except ImportError:
+    import plot_params as pp
 
 
 class Bench_Plot():
@@ -38,10 +41,14 @@ class Bench_Plot():
    '''
 
     def __init__(self, data_hash, x_axis, y_axis, x_label, y_label, log_x_axis,
-                 log_y_axis, fill_variables,
+                 log_y_axis, fill_variables, 
                  x_ticks='data',
                  ylim_left=None,
                  ylim_right=None,
+                 data_path='/path/to/data',
+                 catalogue_path='/path/to/catalogue.yaml',
+                 save_path='/path/to/save/plots',
+                 file_ending='pdf',
                  matplotlib_params=pp.matplotlib_params,
                  color_params=pp.color_params,
                  additional_params=pp.additional_params,
@@ -65,28 +72,23 @@ class Bench_Plot():
         self.label_params = label_params
 
         # Load data
-        if type(data_hash) is str:
-            data_hash = [data_hash]
+        with open(catalogue_path, 'r') as c:
+            catalogue = yaml.safe_load(c)
+        plot_name = catalogue[data_hash]['plot_name']
 
-        data_frames = []
+        data_path = os.path.join(data_path, data_hash + '.csv')
 
-        for dhash in data_hash:
-            suffix = '/path/to/data.csv'
-            data_path = os.path.join(dhash, suffix)
-            data_path = 'multiareamodel_data.csv'
-            # data_path = 'microcircuit_data.csv'
+        try:
+            self.df = pd.read_csv(data_path, delimiter=',')
+        except FileNotFoundError:
+            print('File could not be found')
+            quit()
 
-            try:
-                data = pd.read_csv(data_path, delimiter=',')
-            except FileNotFoundError:
-                print('File could not be found')
-                quit()
-
-            data_frames.append(data)
-
-        self.df = pd.concat(data_frames)
 
         # Compute derived quantities
+        self.df['num_nvp'] = (
+                self.df['num_omp_threads'] * self.df['num_mpi_tasks']
+                )
         self.df['wall_time_creation+wall_time_connect'] = (
             self.df['wall_time_creation'] + self.df['wall_time_connect'])
         self.df['sim_factor'] = (self.df['wall_time_sim']
@@ -131,16 +133,17 @@ class Bench_Plot():
             # Plot fraction of times spent in phases
             frac_plot = self.plot_fractions(fig.add_subplot(self.spec[-1, 0]))
             frac_plot.set_xlabel(self.x_label)
-            frac_plot.set_ylabel(r'$T_{\textnormal{wall}}\%$')
+            frac_plot.set_ylabel(r'$T_{\mathrm{wall}}\%$')
             # Plot values specified in y_axis
             main_plot = self.plot_main(fig.add_subplot(
                 self.spec[:-1, 0], sharex=frac_plot), plot_column=0)
+            main_plot.set_ylim(10,120)
 
         if num_subplots == 2:
             # Plot fraction of times spent in phases
             frac_plot = self.plot_fractions(fig.add_subplot(self.spec[-1, 1]))
             frac_plot.set_xlabel(self.x_label)
-            frac_plot.set_ylabel(r'$T_{\textnormal{wall}}\%$')
+            frac_plot.set_ylabel(r'$T_{\mathrm{wall}}\%$')
             if self.x_ticks == 'data':
                 frac_plot.set_xticks(self.df[self.x_axis])
             else:
@@ -184,9 +187,10 @@ class Bench_Plot():
             frac_plot.get_legend_handles_labels(),
             main_plot.get_legend_handles_labels())]
         main_plot.legend(handles, labels, loc='upper right')
-        plt.tight_layout()
         st.set_y(0.95)
         fig.subplots_adjust(top=0.87)
+        plt.tight_layout()
+        plt.savefig(os.path.join(save_path, plot_name + '.' + file_ending))
         plt.show()
 
     def plot_fractions(self, frac_plot, fill_variables=None, interpolate=False,
@@ -264,8 +268,8 @@ if __name__ == '__main__':
                  'wall_time_creation+wall_time_connect'],
                 ['sim_factor', 'phase_total_factor']],
         x_label='Nodes',
-        y_label=['wall time [s]', r'real-time factor $T_{\textnormal{wall}}'
-                 r'/T_{\textnormal{model}}$'],
+        y_label=['wall time [s]', r'real-time factor $T_{\textnormal{wall}}$'
+                 r'$T_{\textnormal{model}}$'],
         log_x_axis=False,
         log_y_axis=False,
         fill_variables=[
