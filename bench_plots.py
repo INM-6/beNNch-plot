@@ -143,7 +143,7 @@ class Bench_Plot():
             # Plot fraction of times spent in phases
             frac_plot = self.plot_fractions(fig.add_subplot(self.spec[-1, 1]))
             frac_plot.set_xlabel(self.x_label)
-            frac_plot.set_ylabel(r'$T_{\mathrm{wall}}\%$')
+            frac_plot.set_ylabel(r'$T_{\mathrm{wall}}$ $[\%]$')
             if self.x_ticks == 'data':
                 frac_plot.set_xticks(self.df[self.x_axis])
             else:
@@ -187,9 +187,9 @@ class Bench_Plot():
             frac_plot.get_legend_handles_labels(),
             main_plot.get_legend_handles_labels())]
         main_plot.legend(handles, labels, loc='upper right')
+        plt.tight_layout()
         st.set_y(0.95)
         fig.subplots_adjust(top=0.87)
-        plt.tight_layout()
         plt.savefig(os.path.join(save_path, plot_name + '.' + file_ending))
         plt.show()
 
