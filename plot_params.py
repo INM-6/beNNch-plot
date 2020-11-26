@@ -9,7 +9,7 @@ matplotlib_params = {
     'legend.fontsize': 11,
     'xtick.labelsize': 11,
     'ytick.labelsize': 11,
-    'text.usetex': True,
+    'text.usetex': False,
     'font.family': 'serif',
 }
 
