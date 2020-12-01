@@ -31,7 +31,8 @@ class Bench_Plot():
     log_y_axis : book
         display y axis in log scale
     fill_variables : list
-        variables (e.g. timers) to be plotted as fill  between graph and x axis
+        variables (e.g. timers) to be plotted as fill  between graph and
+        x axis
     matplotlib_params : dict
         parameters passed to matplotlib
     color_params : dict
@@ -40,15 +41,14 @@ class Bench_Plot():
         additional parameters used for plotting
    '''
 
-    def __init__(self, x_axis, y_axis, x_label, y_label,
-                 log_x_axis, log_y_axis, fill_variables,
-                 hline_left=None,
-                 hline_right=None,
+    def __init__(self, x_axis, y_axis, x_label, y_label, fill_variables,
+                 log_axes=(False, False),
+                 hlines=None,
+                 hline_colors=None,
                  vlines=None,
                  vline_colors=None,
                  x_ticks='data',
-                 ylim_left=None,
-                 ylim_right=None,
+                 ylims=None,
                  data_hash=None,
                  data_path='/path/to/data',
                  catalogue_path='/path/to/catalogue.yaml',
@@ -63,25 +63,31 @@ class Bench_Plot():
         Initialize attributes. Use attributes to set up figure.
         '''
 
-        self.data_hash = data_hash
-        self.hline_left = hline_left
-        self.hline_right = hline_right
+        self.hlines = hlines
+        self.hline_colors = hline_colors
         self.vlines = vlines
         self.vline_colors = vline_colors
         self.x_axis = x_axis
         self.y_axis = y_axis
         self.x_label = x_label
         self.y_label = y_label
-        self.log_x_axis = log_x_axis
-        self.log_y_axis = log_y_axis
+        self.log_axes = log_axes
         self.fill_variables = fill_variables
         self.x_ticks = x_ticks
+        self.ylims = ylims
+        self.save_path = save_path
+        self.file_ending = file_ending
         self.matplotlib_params = matplotlib_params
-        self.color_params = color_params
         self.additional_params = additional_params
+        self.color_params = color_params
         self.label_params = label_params
 
-        # Load data
+        self.load_data(data_hash, data_path, catalogue_path,
+                       manually_set_plot_name)
+        self.compute_derived_quantities()
+
+    def load_data(self, data_hash, data_path, catalogue_path,
+                  manually_set_plot_name):
         if data_hash is None:
             # data path points directly to file
             try:
@@ -89,11 +95,11 @@ class Bench_Plot():
             except FileNotFoundError:
                 print('File could not be found')
                 quit()
-            plot_name = manually_set_plot_name
-        else:        
+            self.plot_name = manually_set_plot_name
+        else:
             with open(catalogue_path, 'r') as c:
                 catalogue = yaml.safe_load(c)
-            plot_name = catalogue[data_hash]['plot_name']
+            self.plot_name = catalogue[data_hash]['plot_name']
 
             data_path = os.path.join(data_path, data_hash + '.csv')
 
@@ -103,7 +109,7 @@ class Bench_Plot():
                 print('File could not be found')
                 quit()
 
-        # Compute derived quantities
+    def compute_derived_quantities(self):
         self.df['num_nvp'] = (
             self.df['num_omp_threads'] * self.df['num_mpi_tasks']
         )
@@ -132,112 +138,23 @@ class Bench_Plot():
                                          * self.df['wall_time_phase_deliver']
                                          / self.df['wall_time_phase_total'])
 
+    def setup_figure(self, num_subplots):
         # Change matplotlib defaults
-        matplotlib.rcParams.update(matplotlib_params)
+        matplotlib.rcParams.update(self.matplotlib_params)
 
-        # Determine number of subplots
-        num_subplots = len(self.y_axis)
         if num_subplots == 1:
-            figsize = additional_params['figsize_single']
-        else:
-            figsize = additional_params['figsize_double']
+            figsize = self.additional_params['figsize_single']
+        elif num_subplots == 2:
+            figsize = self.additional_params['figsize_double']
 
         # Set up figure
-        fig = plt.figure(figsize=figsize)
-        st = fig.suptitle(plot_name)
-        self.spec = gridspec.GridSpec(ncols=num_subplots, nrows=4, figure=fig)
+        self.fig = plt.figure(figsize=figsize)
+        self.st = self.fig.suptitle(self.plot_name)
+        self.spec = gridspec.GridSpec(ncols=num_subplots, nrows=4,
+                                      figure=self.fig)
 
-        if num_subplots == 1:
-            # Plot fraction of times spent in phases
-            frac_plot = self.plot_fractions(fig.add_subplot(self.spec[-1, 0]))
-            frac_plot.set_xlabel(self.x_label)
-            frac_plot.set_ylabel(r'$T_{\mathrm{wall}}\%$')
-            # Plot values specified in y_axis
-            main_plot = self.plot_main(fig.add_subplot(
-                self.spec[:-1, 0], sharex=frac_plot), plot_column=0)
-            main_plot.set_ylim(ylim_left)
-
-        if num_subplots == 2:
-            # Plot fraction of times spent in phases
-            frac_plot = self.plot_fractions(fig.add_subplot(self.spec[-1, 1]))
-            frac_plot.set_xlabel(self.x_label)
-            frac_plot.set_ylabel(r'$T_{\mathrm{wall}}$ $[\%]$')
-            if self.x_ticks == 'data':
-                frac_plot.set_xticks(self.df[self.x_axis])
-            else:
-                frac_plot.set_xticks(self.x_ticks)
-
-            # Plot values specified in y_axis
-            main_plot = self.plot_main(fig.add_subplot(
-                self.spec[:-1, 1]), plot_column=1)
-            if ylim_right is None:
-                pass
-            else:
-                main_plot.set_ylim(ylim_right)
-
-            if self.x_ticks == 'data':
-                main_plot.set_xticks(self.df[self.x_axis])
-            else:
-                main_plot.set_xticks(self.x_ticks)
-            main_plot.set_xticklabels([])
-
-            if ('wall_time_sim' in self.y_axis[0] and
-                    'wall_time_creation+wall_time_connect' in self.y_axis[0]):
-                main_plot_left = self.plot_fractions(
-                    fig.add_subplot(self.spec[:, 0]),
-                    fill_variables=['wall_time_sim',
-                                    'wall_time_creation+wall_time_connect'],
-                    interpolate=True, step=None)
-                self.y_axis[0].remove('wall_time_sim')
-                self.y_axis[0].remove('wall_time_creation+wall_time_connect')
-                if self.y_axis[0]:
-                    main_plot_left = self.plot_main(main_plot_left)
-            else:
-                main_plot_left = self.plot_main(fig.add_subplot(
-                    self.spec[:, 0], sharex=frac_plot), plot_column=0)
-            main_plot_left.set_xlabel(self.x_label)
-            main_plot_left.legend(loc='upper right')
-            if ylim_left is None:
-                pass
-            else:
-                main_plot_left.set_ylim(ylim_left)
-
-        # plot horizontal line(s)
-        if self.hline_left is None:
-            pass
-        else:
-            main_plot_left.axhline(self.hline_left)
-        if self.hline_right is None:
-            pass
-        else:
-            main_plot.axhline(self.hline_right)
-        # plot vertical line(s)
-        if self.vlines is None:
-            pass
-        else:
-            for i, line in enumerate(self.vlines):
-                main_plot_left.axvline(line, color=self.vline_colors[i])
-                main_plot.axvline(line, color=self.vline_colors[i])
-
-        handles, labels = [(a + b) for a, b in zip(
-            frac_plot.get_legend_handles_labels(),
-            main_plot.get_legend_handles_labels())]
-        main_plot.legend(handles, labels, loc='upper right')
-        plt.tight_layout()
-        st.set_y(0.95)
-        fig.subplots_adjust(top=0.87)
-        plt.savefig(os.path.join(save_path, plot_name + '.' + file_ending))
-
-    def plot_fractions(self, frac_plot, fill_variables=None, interpolate=False,
-                       step='pre'):
-        if fill_variables is None:
-            fill_variables = self.fill_variables
-
-        if self.x_ticks == 'data':
-            frac_plot.set_xticks(self.df[self.x_axis])
-        else:
-            frac_plot.set_xticks(self.x_ticks)
-
+    def plot_fractions(self, frac_plot, fill_variables,
+                       interpolate=False, step='pre'):
         fill_height = 0
         for fill in fill_variables:
             frac_plot.fill_between(self.df[self.x_axis],
@@ -246,15 +163,22 @@ class Bench_Plot():
                                    label=self.label_params[fill],
                                    color=self.color_params[fill],
                                    interpolate=interpolate,
-                                   step=step
-                                   )
+                                   step=step)
             fill_height += self.df[fill].to_numpy()
 
-        if self.log_x_axis:
+        if self.x_ticks == 'data':
+            frac_plot.set_xticks(self.df[self.x_axis])
+        else:
+            frac_plot.set_xticks(self.x_ticks)
+
+        if self.log_axes[0]:
             frac_plot.set_xscale('log')
             frac_plot.tick_params(bottom=False, which='minor')
             frac_plot.get_xaxis().set_major_formatter(
                 matplotlib.ticker.ScalarFormatter())
+
+        frac_plot.set_xlabel(self.x_label)
+        frac_plot.set_ylabel(r'$T_{\mathrm{wall}}\%$')
 
         return frac_plot
 
@@ -272,37 +196,96 @@ class Bench_Plot():
         else:
             main_plot.set_xticks(self.x_ticks)
 
-        if self.log_x_axis:
+        if self.log_axes[0]:
             main_plot.tick_params(bottom=False, which='minor')
-        if self.log_y_axis:
+        if self.log_axes[1]:
             main_plot.set_yscale('log')
 
+        if self.ylims is not None:
+            main_plot.set_ylim(self.ylims[plot_column])
+
+        # plot horizontal line(s)
+        if self.hlines is not None:
+            for i, hline in enumerate(self.hlines[plot_column]):
+                main_plot.axhline(hline, color=self.hline_colors[i])
+
+        # plot vertical line(s)
+        if self.vlines is not None:
+            for i, vline in enumerate(self.vlines):
+                main_plot.axvline(vline, color=self.vline_colors[i])
+
         return main_plot
+
+    def plot_single(self):
+        self.setup_figure(1)
+        # Plot fraction of times spent in phases
+        self.plot_fractions(self.fig.add_subplot(self.spec[-1, 0]),
+                            self.fill_variables)
+
+        # Plot values specified in y_axis
+        main_plot = self.plot_main(self.fig.add_subplot(self.spec[:-1, 0]), 0)
+        main_plot.set_xticklabels('')
+
+        self.finish_plot()
+
+    def plot_double(self):
+        self.setup_figure(2)
+        # Plot fraction of times spent in phases
+        frac_plot = self.plot_fractions(
+            self.fig.add_subplot(self.spec[-1, 1]),
+            self.fill_variables)
+
+        # Plot values specified in y_axis
+        main_plot = []
+        if ('wall_time_sim' in self.y_axis[0] and
+                'wall_time_creation+wall_time_connect' in self.y_axis[0]):
+            main_plot.append(self.plot_fractions(
+                self.fig.add_subplot(self.spec[:, 0]),
+                fill_variables=['wall_time_sim',
+                                'wall_time_creation+wall_time_connect'],
+                interpolate=True, step=None))
+            self.y_axis[0].remove('wall_time_sim')
+            self.y_axis[0].remove('wall_time_creation+wall_time_connect')
+            if self.y_axis[0]:
+                main_plot[0] = self.plot_main(main_plot[0])
+        else:
+            main_plot.append(self.plot_main(self.fig.add_subplot(
+                self.spec[:, 0], sharex=frac_plot), plot_column=0))
+        main_plot[0].set_xlabel(self.x_label)
+        main_plot[0].legend(loc='upper right')
+
+        main_plot.append(self.plot_main(self.fig.add_subplot(
+            self.spec[:-1, 1]), plot_column=1))
+
+        handles, labels = [(a + b) for a, b in zip(
+            frac_plot.get_legend_handles_labels(),
+            main_plot[1].get_legend_handles_labels())]
+        main_plot[1].legend(handles, labels, loc='upper right')
+        main_plot[1].set_xticklabels('')
+
+        self.finish_plot()
+
+    def finish_plot(self):
+        plt.tight_layout()
+        self.st.set_y(0.95)
+        self.fig.subplots_adjust(top=0.87)
+
+    def save_fig(self):
+        plt.savefig(os.path.join(self.save_path,
+                                 self.plot_name + '.' + self.file_ending))
 
 
 if __name__ == '__main__':
 
-    # Bench_Plot(
-    #     data_hash='trash',
-    #     x_axis='num_omp_threads',
-    #     y_axis=[['sim_factor']],
-    #     x_label='Threads',
-    #     y_label=[r'real-time factor $T_{\mathrm{wall}}'
-    #              r'/T_{\mathrm{model}}$'],
-    #     log_x_axis=True,
-    #     log_y_axis=True,
-    #     fill_variables=['frac_phase_update',
-    #                     'frac_phase_communicate',
-    #                     'frac_phase_deliver'
-    # ])
-
-    Bench_Plot(
-        data_path='/Users/work/Projects/MAM_benchmarking/mam_benches/data/mam_timer_shrink-buffers_jusuf.csv',
+    bench = Bench_Plot(
+        data_path='/Users/work/Projects/MAM_benchmarking/mam_benches/data/'
+                  + 'mam_timer_shrink-buffers_jusuf.csv',
         save_path='/Users/work/Projects/MAM_benchmarking/BenchPlot/plots',
         manually_set_plot_name='test',
-        hline_right=40,
+        hlines=[[150], [15]],
+        hline_colors=['red'],
         vlines=[30, 50],
-        vline_colors=['gray','yellow'],
+        vline_colors=['gray', 'yellow'],
         # file_ending='png',
         x_axis='num_nodes',
         y_axis=[['wall_time_total', 'wall_time_sim',
@@ -311,10 +294,11 @@ if __name__ == '__main__':
         x_label='Nodes',
         y_label=['wall time [s]', r'real-time factor $T_{\mathrm{wall}}$'
                  r'$T_{\mathrm{model}}$'],
-        log_x_axis=False,
-        log_y_axis=False,
         fill_variables=[
             'frac_phase_communicate',
             'frac_phase_update',
-            'frac_phase_deliver'
-        ])
+            'frac_phase_deliver'],
+        )
+    # bench.plot_single()
+    bench.plot_double()
+    bench.save_fig()
