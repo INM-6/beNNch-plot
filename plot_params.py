@@ -36,8 +36,8 @@ additional_params = {
 
 color_params = {
     'wall_time_total': '#BBBBBB',  # gray
-    'sim_factor': '#EE7733',  # orange
-    'phase_total_factor': '#CCBB44',  # yellow
+    'sim_factor': '#AA3377',  # purple
+    'phase_total_factor': '#EE7733',  # orange
     'wall_time_sim': '#AA3377',  # purple
     'wall_time_creation+wall_time_connect': '#66CCEE',  # cyan
     'wall_time_phase_update': '#EE6677',  # red
@@ -57,7 +57,7 @@ label_params = {
     'wall_time_presim': 'presimulation',
     'wall_time_creation': 'creation',
     'wall_time_connect': 'connection',
-    'wall_time_sim': 'simulation',
+    'wall_time_sim': 'state propagation',
     'wall_time_phase_total': 'all phases',
     'wall_time_phase_update': 'update',
     'wall_time_phase_collocate': 'collocate',
