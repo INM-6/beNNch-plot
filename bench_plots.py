@@ -161,6 +161,7 @@ class Bench_Plot():
                 main_plot.set_xticks(self.df[self.x_axis])
             else:
                 main_plot.set_xticks(self.x_ticks)
+            main_plot.set_xticklabels([])
 
             if ('wall_time_sim' in self.y_axis[0] and
                     'wall_time_creation+wall_time_connect' in self.y_axis[0]):
