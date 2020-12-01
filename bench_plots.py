@@ -137,7 +137,7 @@ class Bench_Plot():
             # Plot values specified in y_axis
             main_plot = self.plot_main(fig.add_subplot(
                 self.spec[:-1, 0], sharex=frac_plot), plot_column=0)
-            main_plot.set_ylim(10,120)
+            main_plot.set_ylim(ylim_left)
 
         if num_subplots == 2:
             # Plot fraction of times spent in phases
