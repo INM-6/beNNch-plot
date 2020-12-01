@@ -42,8 +42,9 @@ class Bench_Plot():
 
     def __init__(self, x_axis, y_axis, x_label, y_label,
                  log_x_axis, log_y_axis, fill_variables,
-                 hline=None,
-                 vline=None,
+                 hline_left=None,
+                 hline_right=None,
+                 vlines=None,
                  vline_colors=None,
                  x_ticks='data',
                  ylim_left=None,
@@ -63,8 +64,9 @@ class Bench_Plot():
         '''
 
         self.data_hash = data_hash
-        self.hline = hline
-        self.vline = vline
+        self.hline_left = hline_left
+        self.hline_right = hline_right
+        self.vlines = vlines
         self.vline_colors = vline_colors
         self.x_axis = x_axis
         self.y_axis = y_axis
@@ -199,19 +201,22 @@ class Bench_Plot():
             else:
                 main_plot_left.set_ylim(ylim_left)
 
-            # plot horizontal line
-            if hline is None:
-                pass
-            else:
-                main_plot_left.axhline(self.hline)
-                main_plot.axhline(self.hline)
-            # plot vertical line(s)
-            if vline is None:
-                pass
-            else:
-                for i, line in enumerate(self.vline):
-                    main_plot_left.axvline(line, color=self.vline_colors[i])
-                    main_plot.axvline(line, color=self.vline_colors[i])
+        # plot horizontal line(s)
+        if self.hline_left is None:
+            pass
+        else:
+            main_plot_left.axhline(self.hline_left)
+        if self.hline_right is None:
+            pass
+        else:
+            main_plot.axhline(self.hline_right)
+        # plot vertical line(s)
+        if self.vlines is None:
+            pass
+        else:
+            for i, line in enumerate(self.vlines):
+                main_plot_left.axvline(line, color=self.vline_colors[i])
+                main_plot.axvline(line, color=self.vline_colors[i])
 
         handles, labels = [(a + b) for a, b in zip(
             frac_plot.get_legend_handles_labels(),
@@ -294,6 +299,9 @@ if __name__ == '__main__':
         data_path='/Users/work/Projects/MAM_benchmarking/mam_benches/data/mam_timer_shrink-buffers_jusuf.csv',
         save_path='/Users/work/Projects/MAM_benchmarking/BenchPlot/plots',
         manually_set_plot_name='test',
+        hline_right=40,
+        vlines=[30, 50],
+        vline_colors=['gray','yellow'],
         # file_ending='png',
         x_axis='num_nodes',
         y_axis=[['wall_time_total', 'wall_time_sim',
