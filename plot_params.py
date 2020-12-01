@@ -10,8 +10,8 @@ matplotlib_params = {
     'legend.fontsize': 11*size_factor,
     'xtick.labelsize': 11*size_factor,
     'ytick.labelsize': 11*size_factor,
-    'font.family': 'sans-serif',
-    'font.sans-serif': 'Avenir',
+    # 'font.family': 'sans-serif',
+    # 'font.sans-serif': 'Avenir',
     'text.usetex': False,
 }
 

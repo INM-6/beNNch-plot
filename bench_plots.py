@@ -40,11 +40,15 @@ class Bench_Plot():
         additional parameters used for plotting
    '''
 
-    def __init__(self, data_hash, x_axis, y_axis, x_label, y_label, log_x_axis,
-                 log_y_axis, fill_variables, 
+    def __init__(self, x_axis, y_axis, x_label, y_label,
+                 log_x_axis, log_y_axis, fill_variables,
+                 hline=None,
+                 vline=None,
+                 vline_colors=None,
                  x_ticks='data',
                  ylim_left=None,
                  ylim_right=None,
+                 data_hash=None,
                  data_path='/path/to/data',
                  catalogue_path='/path/to/catalogue.yaml',
                  save_path='/path/to/save/plots',
@@ -52,12 +56,16 @@ class Bench_Plot():
                  matplotlib_params=pp.matplotlib_params,
                  color_params=pp.color_params,
                  additional_params=pp.additional_params,
-                 label_params=pp.label_params):
+                 label_params=pp.label_params,
+                 manually_set_plot_name=None):
         '''
         Initialize attributes. Use attributes to set up figure.
         '''
 
         self.data_hash = data_hash
+        self.hline = hline
+        self.vline = vline
+        self.vline_colors = vline_colors
         self.x_axis = x_axis
         self.y_axis = y_axis
         self.x_label = x_label
@@ -72,23 +80,31 @@ class Bench_Plot():
         self.label_params = label_params
 
         # Load data
-        with open(catalogue_path, 'r') as c:
-            catalogue = yaml.safe_load(c)
-        plot_name = catalogue[data_hash]['plot_name']
+        if data_hash is None:
+            # data path points directly to file
+            try:
+                self.df = pd.read_csv(data_path, delimiter=',')
+            except FileNotFoundError:
+                print('File could not be found')
+                quit()
+            plot_name = manually_set_plot_name
+        else:        
+            with open(catalogue_path, 'r') as c:
+                catalogue = yaml.safe_load(c)
+            plot_name = catalogue[data_hash]['plot_name']
 
-        data_path = os.path.join(data_path, data_hash + '.csv')
+            data_path = os.path.join(data_path, data_hash + '.csv')
 
-        try:
-            self.df = pd.read_csv(data_path, delimiter=',')
-        except FileNotFoundError:
-            print('File could not be found')
-            quit()
-
+            try:
+                self.df = pd.read_csv(data_path, delimiter=',')
+            except FileNotFoundError:
+                print('File could not be found')
+                quit()
 
         # Compute derived quantities
         self.df['num_nvp'] = (
-                self.df['num_omp_threads'] * self.df['num_mpi_tasks']
-                )
+            self.df['num_omp_threads'] * self.df['num_mpi_tasks']
+        )
         self.df['wall_time_creation+wall_time_connect'] = (
             self.df['wall_time_creation'] + self.df['wall_time_connect'])
         self.df['sim_factor'] = (self.df['wall_time_sim']
@@ -183,6 +199,20 @@ class Bench_Plot():
             else:
                 main_plot_left.set_ylim(ylim_left)
 
+            # plot horizontal line
+            if hline is None:
+                pass
+            else:
+                main_plot_left.axhline(self.hline)
+                main_plot.axhline(self.hline)
+            # plot vertical line(s)
+            if vline is None:
+                pass
+            else:
+                for i, line in enumerate(self.vline):
+                    main_plot_left.axvline(line, color=self.vline_colors[i])
+                    main_plot.axvline(line, color=self.vline_colors[i])
+
         handles, labels = [(a + b) for a, b in zip(
             frac_plot.get_legend_handles_labels(),
             main_plot.get_legend_handles_labels())]
@@ -191,7 +221,6 @@ class Bench_Plot():
         st.set_y(0.95)
         fig.subplots_adjust(top=0.87)
         plt.savefig(os.path.join(save_path, plot_name + '.' + file_ending))
-        plt.show()
 
     def plot_fractions(self, frac_plot, fill_variables=None, interpolate=False,
                        step='pre'):
@@ -252,8 +281,8 @@ if __name__ == '__main__':
     #     x_axis='num_omp_threads',
     #     y_axis=[['sim_factor']],
     #     x_label='Threads',
-    #     y_label=[r'real-time factor $T_{\textnormal{wall}}'
-    #              r'/T_{\textnormal{model}}$'],
+    #     y_label=[r'real-time factor $T_{\mathrm{wall}}'
+    #              r'/T_{\mathrm{model}}$'],
     #     log_x_axis=True,
     #     log_y_axis=True,
     #     fill_variables=['frac_phase_update',
@@ -262,14 +291,17 @@ if __name__ == '__main__':
     # ])
 
     Bench_Plot(
-        data_hash='trash',
+        data_path='/Users/work/Projects/MAM_benchmarking/mam_benches/data/mam_timer_shrink-buffers_jusuf.csv',
+        save_path='/Users/work/Projects/MAM_benchmarking/BenchPlot/plots',
+        manually_set_plot_name='test',
+        # file_ending='png',
         x_axis='num_nodes',
         y_axis=[['wall_time_total', 'wall_time_sim',
                  'wall_time_creation+wall_time_connect'],
                 ['sim_factor', 'phase_total_factor']],
         x_label='Nodes',
-        y_label=['wall time [s]', r'real-time factor $T_{\textnormal{wall}}$'
-                 r'$T_{\textnormal{model}}$'],
+        y_label=['wall time [s]', r'real-time factor $T_{\mathrm{wall}}$'
+                 r'$T_{\mathrm{model}}$'],
         log_x_axis=False,
         log_y_axis=False,
         fill_variables=[
