@@ -10,7 +10,7 @@ except ImportError:
     import plot_params as pp
 
 
-class Bench_Plot():
+class BenchPlot():
     '''
     Class organizing benchmarking plots
 
@@ -273,32 +273,3 @@ class Bench_Plot():
     def save_fig(self):
         plt.savefig(os.path.join(self.save_path,
                                  self.plot_name + '.' + self.file_ending))
-
-
-if __name__ == '__main__':
-
-    bench = Bench_Plot(
-        data_path='/Users/work/Projects/MAM_benchmarking/mam_benches/data/'
-                  + 'mam_timer_shrink-buffers_jusuf.csv',
-        save_path='/Users/work/Projects/MAM_benchmarking/BenchPlot/plots',
-        manually_set_plot_name='test',
-        hlines=[[150], [15]],
-        hline_colors=['red'],
-        vlines=[30, 50],
-        vline_colors=['gray', 'yellow'],
-        # file_ending='png',
-        x_axis='num_nodes',
-        y_axis=[['wall_time_total', 'wall_time_sim',
-                 'wall_time_creation+wall_time_connect'],
-                ['sim_factor', 'phase_total_factor']],
-        x_label='Nodes',
-        y_label=['wall time [s]', r'real-time factor $T_{\mathrm{wall}}$'
-                 r'$T_{\mathrm{model}}$'],
-        fill_variables=[
-            'frac_phase_communicate',
-            'frac_phase_update',
-            'frac_phase_deliver'],
-        )
-    # bench.plot_single()
-    bench.plot_double()
-    bench.save_fig()
