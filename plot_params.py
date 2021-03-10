@@ -1,3 +1,5 @@
+import tol_colors
+
 size_factor = 1.3
 matplotlib_params = {
     'text.latex.preamble': ['\\usepackage{gensymb}'],
@@ -21,31 +23,21 @@ additional_params = {
     # 'figsize_double': [12.2*1.5, 6.1]
 }
 
-# color_params = {
-#     'wall_time_total': '#bebebe', # Black
-#     'real_time_factor': '#bebebe', # Black
-#     'wall_time_sim': '#ff9f9a', # Peach
-#     'wall_time_creation+wall_time_connect': '#64b5cd', # Light Blue
-#     'wall_time_phase_update': '#c44e52', # Brownish red
-#     'wall_time_phase_deliver': '#4c72b0', # Dark Blue
-#     'wall_time_phase_communicate': '#55a868', # Light green
-#     'frac_phase_update': '#c44e52', # Brownish red
-#     'frac_phase_deliver': '#4c72b0', # Dark Blue
-#     'frac_phase_communicate': '#55a868', # Light green
-#     }
+bright = tol_colors.tol_cset('bright')
+vibrant = tol_colors.tol_cset('vibrant')
 
 color_params = {
-    'wall_time_total': '#BBBBBB',  # gray
-    'sim_factor': '#AA3377',  # purple
-    'phase_total_factor': '#EE7733',  # orange
-    'wall_time_sim': '#AA3377',  # purple
-    'wall_time_creation+wall_time_connect': '#66CCEE',  # cyan
-    'wall_time_phase_update': '#EE6677',  # red
-    'wall_time_phase_deliver': '#0077BB',  # blue
-    'wall_time_phase_communicate': '#228833',  # green
-    'frac_phase_update': '#EE6677',  # red
-    'frac_phase_deliver': '#0077BB',  # blue
-    'frac_phase_communicate': '#228833',  # green
+    'wall_time_total': bright.grey,
+    'sim_factor': bright.purple,
+    'phase_total_factor': vibrant.orange,
+    'wall_time_sim': bright.purple,
+    'wall_time_creation+wall_time_connect': bright.cyan,
+    'wall_time_phase_update': bright.red,
+    'wall_time_phase_deliver': vibrant.blue,
+    'wall_time_phase_communicate': bright.green,
+    'frac_phase_update': bright.red,
+    'frac_phase_deliver': vibrant.blue,
+    'frac_phase_communicate': bright.green,
 }
 
 label_params = {
