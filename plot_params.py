@@ -1,21 +1,23 @@
+size_factor = 1.3
 matplotlib_params = {
     'text.latex.preamble': ['\\usepackage{gensymb}'],
     'image.origin': 'lower',
     'image.interpolation': 'nearest',
     'axes.grid': False,
-    'axes.labelsize': 15,
-    'axes.titlesize': 19,
-    'font.size': 16,
-    'legend.fontsize': 11,
-    'xtick.labelsize': 11,
-    'ytick.labelsize': 11,
-    'text.usetex': True,
-    'font.family': 'serif',
+    'axes.labelsize': 15*size_factor,
+    'axes.titlesize': 19*size_factor,
+    'font.size': 16*size_factor,
+    'legend.fontsize': 11*size_factor,
+    'xtick.labelsize': 11*size_factor,
+    'ytick.labelsize': 11*size_factor,
+    # 'font.family': 'sans-serif',
+    # 'font.sans-serif': 'Avenir',
+    'text.usetex': False,
 }
 
 additional_params = {
     'figsize_single': [6.1 * 1.5, 6.1],
-    'figsize_double': [12.2, 6.1]
+    'figsize_double': [12.2, 6.1*1.1]
     # 'figsize_double': [12.2*1.5, 6.1]
 }
 
@@ -34,8 +36,8 @@ additional_params = {
 
 color_params = {
     'wall_time_total': '#BBBBBB',  # gray
-    'sim_factor': '#EE7733',  # orange
-    'phase_total_factor': '#CCBB44',  # yellow
+    'sim_factor': '#AA3377',  # purple
+    'phase_total_factor': '#EE7733',  # orange
     'wall_time_sim': '#AA3377',  # purple
     'wall_time_creation+wall_time_connect': '#66CCEE',  # cyan
     'wall_time_phase_update': '#EE6677',  # red
@@ -55,7 +57,7 @@ label_params = {
     'wall_time_presim': 'presimulation',
     'wall_time_creation': 'creation',
     'wall_time_connect': 'connection',
-    'wall_time_sim': 'simulation',
+    'wall_time_sim': 'state propagation',
     'wall_time_phase_total': 'all phases',
     'wall_time_phase_update': 'update',
     'wall_time_phase_collocate': 'collocate',
