@@ -38,6 +38,7 @@ color_params = {
     'frac_phase_update': bright.red,
     'frac_phase_deliver': vibrant.blue,
     'frac_phase_communicate': bright.green,
+    'max_memory' : vibrant.magenta
 }
 
 label_params = {
