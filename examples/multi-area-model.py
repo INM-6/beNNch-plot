@@ -3,7 +3,7 @@ import benchplot as bp
 
 bench = bp.BenchPlot(
     data_path='multi-area-model.csv',
-    save_path='./',
+    save_path='/path/to/savedir',
     manually_set_plot_name='MAM',
     hlines=[[150], [15]],
     hline_colors=['red'],

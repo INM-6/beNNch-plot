@@ -58,8 +58,7 @@ class BenchPlot():
                  color_params=pp.color_params,
                  additional_params=pp.additional_params,
                  label_params=pp.label_params,
-                 manually_set_plot_name=None,
-                 time_scaling=1):
+                 manually_set_plot_name=None):
         '''
         Initialize attributes. Use attributes to set up figure.
         '''
@@ -82,7 +81,6 @@ class BenchPlot():
         self.additional_params = additional_params
         self.color_params = color_params
         self.label_params = label_params
-        self.time_scaling = time_scaling
 
         self.load_data(data_hash, data_path, catalogue_path,
                        manually_set_plot_name)
@@ -97,6 +95,7 @@ class BenchPlot():
             except FileNotFoundError:
                 print('File could not be found')
                 quit()
+            self.plot_name = manually_set_plot_name
         else:
             with open(catalogue_path, 'r') as c:
                 catalogue = yaml.safe_load(c)
@@ -105,19 +104,15 @@ class BenchPlot():
             data_path = os.path.join(data_path, data_hash + '.csv')
 
             try:
-                self.df = pd.read_csv(data_path, delimiter=';')
+                self.df = pd.read_csv(data_path, delimiter=',')
             except FileNotFoundError:
                 print('File could not be found')
                 quit()
-
-        if manually_set_plot_name is not None:
-            self.plot_name = manually_set_plot_name
 
     def compute_derived_quantities(self):
         self.df['num_nvp'] = (
             self.df['num_omp_threads'] * self.df['num_mpi_tasks']
         )
-        self.df['model_time_sim'] /= self.time_scaling
         self.df['wall_time_creation+wall_time_connect'] = (
             self.df['wall_time_creation'] + self.df['wall_time_connect'])
         self.df['sim_factor'] = (self.df['wall_time_sim']
@@ -158,68 +153,68 @@ class BenchPlot():
         self.spec = gridspec.GridSpec(ncols=num_subplots, nrows=4,
                                       figure=self.fig)
 
-    def plot_fractions(self, axis, fill_variables,
+    def plot_fractions(self, frac_plot, fill_variables,
                        interpolate=False, step='pre'):
         fill_height = 0
         for fill in fill_variables:
-            axis.fill_between(self.df[self.x_axis],
-                              fill_height,
-                              self.df[fill] + fill_height,
-                              label=self.label_params[fill],
-                              color=self.color_params[fill],
-                              interpolate=interpolate,
-                              step=step)
+            frac_plot.fill_between(self.df[self.x_axis],
+                                   fill_height,
+                                   self.df[fill] + fill_height,
+                                   label=self.label_params[fill],
+                                   color=self.color_params[fill],
+                                   interpolate=interpolate,
+                                   step=step)
             fill_height += self.df[fill].to_numpy()
 
         if self.x_ticks == 'data':
-            axis.set_xticks(self.df[self.x_axis])
+            frac_plot.set_xticks(self.df[self.x_axis])
         else:
-            axis.set_xticks(self.x_ticks)
+            frac_plot.set_xticks(self.x_ticks)
 
         if self.log_axes[0]:
-            axis.set_xscale('log')
-            axis.tick_params(bottom=False, which='minor')
-            axis.get_xaxis().set_major_formatter(
+            frac_plot.set_xscale('log')
+            frac_plot.tick_params(bottom=False, which='minor')
+            frac_plot.get_xaxis().set_major_formatter(
                 matplotlib.ticker.ScalarFormatter())
 
-        axis.set_xlabel(self.x_label)
-        axis.set_ylabel(r'$T_{\mathrm{wall}}\%$')
+        frac_plot.set_xlabel(self.x_label)
+        frac_plot.set_ylabel(r'$T_{\mathrm{wall}}\%$')
 
-        return axis
+        return frac_plot
 
-    def plot_main(self, axis, plot_column=0):
+    def plot_main(self, main_plot, plot_column=0):
         for y in self.y_axis[plot_column]:
-            axis.plot(self.df[self.x_axis],
-                      self.df[y],
-                      marker='o',
-                      label=self.label_params[y],
-                      color=self.color_params[y])
-            axis.set_ylabel(self.y_label[plot_column])
+            main_plot.plot(self.df[self.x_axis],
+                           self.df[y],
+                           marker='o',
+                           label=self.label_params[y],
+                           color=self.color_params[y])
+            main_plot.set_ylabel(self.y_label[plot_column])
 
         if self.x_ticks == 'data':
-            axis.set_xticks(self.df[self.x_axis].values)
+            main_plot.set_xticks(self.df[self.x_axis])
         else:
-            axis.set_xticks(self.x_ticks)
+            main_plot.set_xticks(self.x_ticks)
 
         if self.log_axes[0]:
-            axis.tick_params(bottom=False, which='minor')
+            main_plot.tick_params(bottom=False, which='minor')
         if self.log_axes[1]:
-            axis.set_yscale('log')
+            main_plot.set_yscale('log')
 
         if self.ylims is not None:
-            axis.set_ylim(self.ylims[plot_column])
+            main_plot.set_ylim(self.ylims[plot_column])
 
         # plot horizontal line(s)
         if self.hlines is not None:
             for i, hline in enumerate(self.hlines[plot_column]):
-                axis.axhline(hline, color=self.hline_colors[i])
+                main_plot.axhline(hline, color=self.hline_colors[i])
 
         # plot vertical line(s)
         if self.vlines is not None:
             for i, vline in enumerate(self.vlines):
-                axis.axvline(vline, color=self.vline_colors[i])
+                main_plot.axvline(vline, color=self.vline_colors[i])
 
-        return axis
+        return main_plot
 
     def plot_single(self):
         self.setup_figure(1)
