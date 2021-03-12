@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
+import numpy as np
 import yaml
 import os
 try:
@@ -158,13 +159,15 @@ class BenchPlot():
         self.spec = gridspec.GridSpec(ncols=num_subplots, nrows=4,
                                       figure=self.fig)
 
-    def plot_fractions(self, axis, fill_variables,
+    def plot_fractions(self, axis, fill_variables=None,
                        interpolate=False, step='pre'):
         fill_height = 0
+        if fill_variables is None:
+            fill_variables = self.fill_variables
         for fill in fill_variables:
-            axis.fill_between(self.df[self.x_axis],
+            axis.fill_between(np.squeeze(self.df[self.x_axis]),
                               fill_height,
-                              self.df[fill] + fill_height,
+                              np.squeeze(self.df[fill]) + fill_height,
                               label=self.label_params[fill],
                               color=self.color_params[fill],
                               interpolate=interpolate,
@@ -172,7 +175,7 @@ class BenchPlot():
             fill_height += self.df[fill].to_numpy()
 
         if self.x_ticks == 'data':
-            axis.set_xticks(self.df[self.x_axis])
+            axis.set_xticks(np.squeeze(self.df[self.x_axis]))
         else:
             axis.set_xticks(self.x_ticks)
 
