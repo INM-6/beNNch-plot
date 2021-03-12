@@ -81,4 +81,3 @@ ax2.legend()
 
 plt.savefig('microcircuit_jusuf_scaling.pdf')
 
-plt.show()
