@@ -1,0 +1,52 @@
+---
+700c9db6-824c-11eb-adb7-67ae217a4502:
+    machine: JUSUF
+    hyperthreading: OFF
+    notes: Contains timers, 2 MPI process per node, 64 threads per MPI proc, bound to cores, 1,...,10, threads of processes close, Intel MPI
+    plot_name: nest214
+    reason: Scaling of microcircuit beyond two nodes with 2 MPI processes
+    group:
+        - base
+    where:
+        - judac.fz-juelich.de
+        - /p/project/icei-hbp-2020-0006/microcircuit_jube_benches
+
+ef8839ce-824c-11eb-aa99-4bdf3bfd375d:
+    machine: JUSUF
+    hyperthreading: OFF
+    notes: Contains timers, 4 MPI proces per node, 32 threads per MPI proc, bound to cores, 1,...,10 nodes, threads of processes close, Intel MPI
+    plot_name: nest214
+    reason: Scaling of microcircuit beyond two nodes with 4 MPI processes
+    group:
+        - base
+    where:
+        - judac.fz-juelich.de
+        - /p/project/icei-hbp-2020-0006/microcircuit_jube_benches
+
+
+01e23ea8-824d-11eb-83c5-8f9f7c8aec93:
+    machine: JUSUF
+    hyperthreading: OFF
+    notes: Contains timers, 8 MPI proces per node, 16 threads per MPI proc, bound to cores, 1,...,10 nodes, threads of processes close, Intel MPI
+    branch: remotes/jasperalbers/master-timers
+    plot_name: nest214
+    reason: Scaling of microcircuit beyond two nodes with 8 MPI processes
+    group:
+        - base
+    where:
+        - judac.fz-juelich.de
+        - /p/project/icei-hbp-2020-0006/microcircuit_jube_benches
+
+
+0a6f610e-824d-11eb-8289-57dd6a14c4b8:
+    machine: JUSUF
+    hyperthreading: OFF
+    notes: Contains timers, 1 MPI proces per node, 128 threads per MPI proc, bound to cores, 1,...,10 nodes, threads of processes close, Intel MPI
+    branch: remotes/jasperalbers/master-timers
+    plot_name: master
+    reason: Scaling of microcircuit beyond two nodes with 1 MPI process`
+    group:
+        - base
+    where:
+        - judac.fz-juelich.de
+        - /p/project/icei-hbp-2020-0006/microcircuit_jube_benches

@@ -1,3 +1,0 @@
-hash_commit,hash_experiment,num_omp_threads,num_mpi_tasks,num_nodes,max_spike_buffer_size,model_time_presim,model_time_sim,wall_time_total,wall_time_preparation,wall_time_presim,wall_time_creation,wall_time_connect,wall_time_sim,wall_time_phase_total,wall_time_phase_update,wall_time_phase_collocate,wall_time_phase_communicate,wall_time_phase_deliver,max_memory
-abcdef,,64,2,1,1,10,10000,40,10,10,5,6,15,14,5,0,4,5,2000
-123456,,64,2,2,1,10,10000,19,10,10,5,6,7,6,1,0,3,2,2000
