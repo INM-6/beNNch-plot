@@ -34,10 +34,6 @@ class BenchPlot():
 
     def __init__(self, x_axis,
                  log_axes=(False, False),
-                 hlines=None,
-                 hline_colors=None,
-                 vlines=None,
-                 vline_colors=None,
                  x_ticks='data',
                  data_hash=None,
                  data_path='/path/to/data',
@@ -52,10 +48,6 @@ class BenchPlot():
         Initialize attributes. Use attributes to set up figure.
         '''
 
-        self.hlines = hlines
-        self.hline_colors = hline_colors
-        self.vlines = vlines
-        self.vline_colors = vline_colors
         self.x_axis = x_axis
         self.x_ticks = x_ticks
         self.matplotlib_params = matplotlib_params
@@ -85,7 +77,7 @@ class BenchPlot():
             data_path = os.path.join(data_path, data_hash + '.csv')
 
             try:
-                self.df = pd.read_csv(data_path, delimiter=';')
+                self.df = pd.read_csv(data_path, delimiter=',')
             except FileNotFoundError:
                 print('File could not be found')
                 quit()
@@ -95,33 +87,28 @@ class BenchPlot():
 
     def compute_derived_quantities(self):
         self.df['num_nvp'] = (
-            self.df['num_omp_threads'] * self.df['num_mpi_tasks']
+            self.df['threads_per_node'] * self.df['tasks_per_node']
         )
         self.df['model_time_sim'] /= self.time_scaling
-        self.df['wall_time_creation+wall_time_connect'] = (
-            self.df['wall_time_creation'] + self.df['wall_time_connect'])
+        self.df['wall_time_create+wall_time_connect'] = (
+            self.df['wall_time_create'] + self.df['wall_time_connect'])
         self.df['sim_factor'] = (self.df['wall_time_sim']
                                  / self.df['model_time_sim'])
+        self.df['wall_time_phase_total'] = (self.df['wall_time_phase_update']
+                                            + self.df['wall_time_phase_communicate']
+                                            + self.df['wall_time_phase_deliver']
+                                            + self.df['wall_time_phase_collocate'])
         self.df['phase_total_factor'] = (self.df['wall_time_phase_total']
                                          / self.df['model_time_sim'])
-        self.df['phase_update_factor'] = (self.df['wall_time_phase_update']
-                                          / self.df['model_time_sim'])
-        self.df['phase_communicate_factor'] = (self.df[
-            'wall_time_phase_communicate']
-            / self.df['model_time_sim'])
-        self.df['phase_deliver_factor'] = (self.df['wall_time_phase_deliver']
-                                           / self.df['model_time_sim'])
 
-        self.df['frac_phase_update'] = (100 * self.df['wall_time_phase_update']
-                                        / self.df['wall_time_phase_total'])
-        self.df['frac_phase_communicate'] = (100
-                                             * self.df[
-                                                 'wall_time_phase_communicate']
-                                             / self.df['wall_time_phase_total']
-                                             )
-        self.df['frac_phase_deliver'] = (100
-                                         * self.df['wall_time_phase_deliver']
-                                         / self.df['wall_time_phase_total'])
+        for phase in ['update', 'communicate', 'deliver', 'collocate']:
+            self.df['phase_' + phase + '_factor'] = (
+                self.df['wall_time_phase_' + phase]
+                / self.df['model_time_sim'])
+
+            self.df['frac_phase_' + phase] = (
+                100 * self.df['wall_time_phase_' + phase]
+                / self.df['wall_time_phase_total'])
 
     def plot_fractions(self, axis, fill_variables,
                        interpolate=False, step='pre', log=False):
@@ -173,22 +160,9 @@ class BenchPlot():
             axis.tick_params(bottom=False, which='minor')
             axis.set_yscale('log')
 
-        # plot horizontal line(s)
-        if self.hlines is not None:
-            for i, hline in enumerate(self.hlines[plot_column]):
-                axis.axhline(hline, color=self.hline_colors[i])
-
-        # plot vertical line(s)
-        if self.vlines is not None:
-            for i, vline in enumerate(self.vlines):
-                axis.axvline(vline, color=self.vline_colors[i])
-
     def merge_legends(self, ax1, ax2):
         handles, labels = [(a + b) for a, b in zip(
             ax2.get_legend_handles_labels(),
             ax1.get_legend_handles_labels())]
         ax1.legend(handles, labels, loc='upper right')
         ax1.set_xticklabels('')
-
-
-
