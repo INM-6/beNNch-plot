@@ -33,8 +33,8 @@ c335d6fb-2fe0-4eb6-aa60-1dc4f91665c5:
   - MPI process per node: 4
   - threads per MPI proc: 32
   - nest: 2.14.1 with timers
-  - mam_state: Fig5
-  plot_name: scaling
+  - mam_state: Fig3
+  plot_name: scaling_2_14_1_Fig3
   reason: Benchmark comparison with NEST 3.
   where:
   - jureca.fz-juelich.de
