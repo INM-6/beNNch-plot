@@ -165,4 +165,4 @@ class BenchPlot():
             ax2.get_legend_handles_labels(),
             ax1.get_legend_handles_labels())]
         ax1.legend(handles, labels, loc='upper right')
-        ax1.set_xticklabels('')
+        #ax1.set_xticklabels('')
