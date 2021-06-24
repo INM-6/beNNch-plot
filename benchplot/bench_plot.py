@@ -85,6 +85,28 @@ class BenchPlot():
         if manually_set_plot_name is not None:
             self.plot_name = manually_set_plot_name
 
+        dict_ = {'num_nodes': 'first',
+                'threads_per_node': 'first',
+                'tasks_per_node': 'first',
+                'model_time_sim': 'first',
+                'wall_time_create': ['mean', 'std'],
+                'wall_time_connect': ['mean', 'std'],
+                'wall_time_sim': ['mean', 'std'],
+                'wall_time_phase_collocate': ['mean', 'std'],
+                'wall_time_phase_communicate': ['mean', 'std'],
+                'wall_time_phase_deliver': ['mean', 'std'],
+                'wall_time_phase_update': ['mean', 'std'],
+                'wall_time_communicate_target_data': ['mean', 'std'],
+                'wall_time_gather_spike_data': ['mean', 'std'],
+                'wall_time_gather_target_data': ['mean', 'std'],
+                'wall_time_communicate_prepare': ['mean', 'std']}
+
+        col = ['num_nodes', 'threads_per_node', 'tasks_per_node', 'model_time_sim', 'wall_time_create', 'wall_time_create_std', 'wall_time_connect', 'wall_time_connect_std', 'wall_time_sim', 'wall_time_sim_std', 'wall_time_phase_collocate', 'wall_time_phase_collocate_std', 'wall_time_phase_communicate', 'wall_time_phase_communicate_std', 'wall_time_phase_deliver', 'wall_time_phase_deliver_std', 'wall_time_phase_update', 'wall_time_phase_update_std', 'wall_time_communicate_target_data', 'wall_time_communicate_target_data_std', 'wall_time_gather_spike_data', 'wall_time_gather_spike_data_std', 'wall_time_gather_target_data', 'wall_time_gather_target_data_std', 'wall_time_communicate_prepare', 'wall_time_communicate_prepare_std']
+
+        self.df = self.df[~self.df['wall_time_communicate_target_data'].isna()].reset_index().drop('index', axis=1)
+        self.df = self.df.drop('MASTER_SEED', axis=1).groupby(['num_nodes', 'threads_per_node', 'tasks_per_node', 'model_time_sim'], as_index=False).agg(dict_)
+        self.df.columns = col
+
     def compute_derived_quantities(self):
         self.df['num_nvp'] = (
             self.df['threads_per_node'] * self.df['tasks_per_node']
@@ -92,13 +114,26 @@ class BenchPlot():
         self.df['model_time_sim'] /= self.time_scaling
         self.df['wall_time_create+wall_time_connect'] = (
             self.df['wall_time_create'] + self.df['wall_time_connect'])
+        self.df['wall_time_create+wall_time_connect_std'] = (
+            np.sqrt(self.df['wall_time_create_std']**2 + self.df['wall_time_connect_std']**2))
         self.df['sim_factor'] = (self.df['wall_time_sim']
+                                 / self.df['model_time_sim'])
+        self.df['sim_factor_std'] = (self.df['wall_time_sim_std']
                                  / self.df['model_time_sim'])
         self.df['wall_time_phase_total'] = (self.df['wall_time_phase_update']
                                             + self.df['wall_time_phase_communicate']
                                             + self.df['wall_time_phase_deliver']
                                             + self.df['wall_time_phase_collocate'])
+        self.df['wall_time_phase_total_std'] = \
+                                            np.sqrt(
+                                                self.df['wall_time_phase_update_std']**2
+                                                + self.df['wall_time_phase_communicate_std']**2
+                                                + self.df['wall_time_phase_deliver_std']**2
+                                                + self.df['wall_time_phase_collocate_std']**2
+                                                )
         self.df['phase_total_factor'] = (self.df['wall_time_phase_total']
+                                         / self.df['model_time_sim'])
+        self.df['phase_total_factor_std'] = (self.df['wall_time_phase_total_std']
                                          / self.df['model_time_sim'])
 
         for phase in ['update', 'communicate', 'deliver', 'collocate']:
@@ -106,8 +141,16 @@ class BenchPlot():
                 self.df['wall_time_phase_' + phase]
                 / self.df['model_time_sim'])
 
+            self.df['phase_' + phase + '_factor' + '_std'] = (
+                self.df['wall_time_phase_' + phase + '_std']
+                / self.df['model_time_sim'])
+
             self.df['frac_phase_' + phase] = (
                 100 * self.df['wall_time_phase_' + phase]
+                / self.df['wall_time_phase_total'])
+
+            self.df['frac_phase_' + phase + '_std'] = (
+                100 * self.df['wall_time_phase_' + phase + '_std']
                 / self.df['wall_time_phase_total'])
 
     def plot_fractions(self, axis, fill_variables,
@@ -126,6 +169,13 @@ class BenchPlot():
                               color=self.color_params[fill],
                               interpolate=interpolate,
                               step=step)
+            axis.errorbar(np.squeeze(self.df[self.x_axis]),
+                          np.squeeze(self.df[fill]) + fill_height,
+                          yerr=np.squeeze(self.df[fill + '_std']) + fill_height,
+                          capsize=3,
+                          capthick=1,
+                          color='k'
+                          )
             fill_height += self.df[fill].to_numpy()
 
         axis.set_ylabel(r'$T_{\mathrm{wall}} \: [\%]$')
@@ -143,9 +193,13 @@ class BenchPlot():
 
     def plot_main(self, quantities, axis, log=(False, False)):
         for y in quantities:
-            axis.plot(self.df[self.x_axis],
-                      self.df[y],
+            axis.errorbar(
+                      self.df[self.x_axis].values,
+                      self.df[y].values,
+                      yerr=self.df[y + '_std'].values,
                       marker='o',
+                      capsize=3,
+                      capthick=1,
                       label=self.label_params[y],
                       color=self.color_params[y])
 
