@@ -4,7 +4,7 @@ import matplotlib.gridspec as gridspec
 
 
 args = {
-    'data_hash': 'dc3701cb-e81a-4cab-97b3-b70978beed91',
+    'data_hash': '21786536-dfd4-437b-9d43-f0c23e5ccea3',
     'data_path': './timing_results',
     'catalogue_path': 'catalogue.yaml',
     'manually_set_plot_name': 'MAM node scaling',
@@ -40,7 +40,8 @@ B.plot_fractions(axis=ax1,
                  fill_variables=['wall_time_sim',
                                  'wall_time_create+wall_time_connect'],
                  interpolate=True,
-                 step=None)
+                 step=None,
+                 error=True)
 B.plot_main(quantities=['sim_factor', 'phase_total_factor'], axis=ax2)
 B.plot_fractions(axis=ax3,
                  fill_variables=[
@@ -60,4 +61,4 @@ ax3.set_xlabel('Number of Nodes')
 
 ax1.legend()
 B.merge_legends(ax2, ax3)
-plt.savefig('scaling_new_timers_JURECA.pdf')
+plt.savefig('metastable_JURECA.pdf')

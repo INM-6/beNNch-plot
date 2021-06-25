@@ -39,3 +39,18 @@ c335d6fb-2fe0-4eb6-aa60-1dc4f91665c5:
   where:
   - jureca.fz-juelich.de
   - /p/project/cjinb33/jinb3330/gitordner/BenchWork/jube_MAM/nest_2/000000
+
+21786536-dfd4-437b-9d43-f0c23e5ccea3:
+  hyperthreading: false
+  machine: JURECA-DC
+  notes:
+  - num vps per node: 128
+  - MPI process per node: 4
+  - threads per MPI proc: 32
+  - nest: 3.0 with timers
+  - mam_state: Fig5 (metastable)
+  plot_name: scaling_3.0_Fig5
+  reason: Benchmark comparison with NEST 2.14.
+  where:
+  - jureca.fz-juelich.de
+  - /p/project/cjinb33/albers2/ACA_bm_framework/BenchWork/jube_MAM/nest_3/000017
