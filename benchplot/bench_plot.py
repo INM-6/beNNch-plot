@@ -124,7 +124,7 @@ class BenchPlot():
                                          / self.df['wall_time_phase_total'])
 
     def plot_fractions(self, axis, fill_variables,
-                       interpolate=False, step='pre', log=False):
+                       interpolate=False, step=None, log=False, alpha=1.):
         '''
         fill_variables : list
             variables (e.g. timers) to be plotted as fill  between graph and
@@ -136,12 +136,15 @@ class BenchPlot():
                               fill_height,
                               np.squeeze(self.df[fill]) + fill_height,
                               label=self.label_params[fill],
-                              color=self.color_params[fill],
+                              facecolor=self.color_params[fill],
                               interpolate=interpolate,
-                              step=step)
+                              step=step,
+                              alpha=alpha,
+                              linewidth=1,
+                              edgecolor='#444444')
             fill_height += self.df[fill].to_numpy()
 
-        axis.set_ylabel(r'$T_{\mathrm{wall}} \: [\%]$')
+        axis.set_ylabel(r'relative wall time $[\%]$')
 
         if self.x_ticks == 'data':
             axis.set_xticks(np.squeeze(self.df[self.x_axis]))
@@ -158,9 +161,10 @@ class BenchPlot():
         for y in quantities:
             axis.plot(self.df[self.x_axis],
                       self.df[y],
-                      marker='o',
+                      marker=None,
                       label=self.label_params[y],
-                      color=self.color_params[y])
+                      color=self.color_params[y],
+                      linewidth=2)
 
         if self.x_ticks == 'data':
             axis.set_xticks(self.df[self.x_axis].values)

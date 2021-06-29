@@ -25,19 +25,40 @@ additional_params = {
 
 bright = tol_colors.tol_cset('bright')
 vibrant = tol_colors.tol_cset('vibrant')
+light = tol_colors.tol_cset('light')
+
+# color_params = {
+#     'wall_time_total': bright.grey,
+#     'sim_factor': bright.purple,
+#     'phase_total_factor': vibrant.orange,
+#     'wall_time_sim': bright.purple,
+#     'wall_time_creation+wall_time_connect': bright.cyan,
+#     'wall_time_phase_update': bright.red,
+#     'wall_time_phase_deliver': vibrant.blue,
+#     'wall_time_phase_communicate': bright.green,
+#     'frac_phase_update': bright.red,
+#     'phase_update_factor': bright.red,
+#     'frac_phase_deliver': vibrant.blue,
+#     'phase_deliver_factor': vibrant.blue,
+#     'frac_phase_communicate': bright.green,
+#     'phase_communicate_factor': bright.green,
+# }
 
 color_params = {
-    'wall_time_total': bright.grey,
-    'sim_factor': bright.purple,
-    'phase_total_factor': vibrant.orange,
-    'wall_time_sim': bright.purple,
-    'wall_time_creation+wall_time_connect': bright.cyan,
-    'wall_time_phase_update': bright.red,
-    'wall_time_phase_deliver': vibrant.blue,
-    'wall_time_phase_communicate': bright.green,
-    'frac_phase_update': bright.red,
-    'frac_phase_deliver': vibrant.blue,
-    'frac_phase_communicate': bright.green,
+    'wall_time_total': light.pale_grey,
+    'sim_factor': light.pink,
+    'phase_total_factor': light.orange,
+    'wall_time_sim': light.pink,
+    'wall_time_creation+wall_time_connect': light.light_cyan,
+    'frac_phase_communicate': light.mint,
+    'wall_time_phase_communicate': light.mint,
+    'phase_communicate_factor': light.mint,
+    'wall_time_phase_update': light.orange,
+    'frac_phase_update': light.orange,
+    'phase_update_factor': light.orange,
+    'wall_time_phase_deliver': light.light_blue,
+    'frac_phase_deliver': light.light_blue,
+    'phase_deliver_factor': light.light_blue,
 }
 
 label_params = {
@@ -61,8 +82,8 @@ label_params = {
     'frac_phase_update': 'update',
     'frac_phase_communicate': 'communicate',
     'frac_phase_deliver': 'deliver',
-    'phase_update_factor': 'update factor',
-    'phase_communicate_factor': 'communicate factor',
-    'phase_deliver_factor': 'deliver factor',
+    'phase_update_factor': 'update',
+    'phase_communicate_factor': 'communicate',
+    'phase_deliver_factor': 'deliver',
     'phase_total_factor': 'all phases'
 }
