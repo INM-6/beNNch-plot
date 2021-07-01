@@ -32,11 +32,11 @@ dict_ = {
                 {'nest': '2.14.1 with timers'},
                 {'mam_state': 'Fig5'}
                 ],
-            'plot_name': 'scaling_2_14_1_Fig5',
-            'reason': 'Benchmark comparison with NEST 3.',
+            'plot_name': 'scaling_2_14_1_Fig5_3runs',
+            'reason': 'Benchmark comparison with NEST 3., use 3 different master seeds per configuration',
             'where': [
                 'jureca.fz-juelich.de',
-                '/p/project/cjinb33/jinb3330/gitordner/BenchWork/jube_MAM/nest_2/000003'
+                '/p/project/cjinb33/jinb3330/gitordner/BenchWork/jube_MAM/nest_2/000004'
                 ]
             }
         }
@@ -80,7 +80,7 @@ ax3 = fig.add_subplot(spec[1, 1])
 
 B.plot_fractions(axis=ax1,
                  fill_variables=['wall_time_sim',
-                                 'wall_time_create+wall_time_connect'],
+                                 'py_time_create+py_time_connect'],
                  interpolate=True,
                  step=None)
 B.plot_main(quantities=['sim_factor', 'phase_total_factor'], axis=ax2)
