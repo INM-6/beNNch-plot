@@ -214,7 +214,7 @@ class BenchPlot():
                 / self.df['wall_time_phase_total'])
 
     def plot_fractions(self, axis, fill_variables,
-                       interpolate=False, step='pre', log=False,
+                       interpolate=False, step=None, log=False, alpha=1.,
                        error=False):
         '''
         fill_variables : list
@@ -227,9 +227,12 @@ class BenchPlot():
                               fill_height,
                               np.squeeze(self.df[fill]) + fill_height,
                               label=self.label_params[fill],
-                              color=self.color_params[fill],
+                              facecolor=self.color_params[fill],
                               interpolate=interpolate,
-                              step=step)
+                              step=step,
+                              alpha=alpha,
+                              linewidth=1,
+                              edgecolor='#444444')
             if error:
                 axis.errorbar(np.squeeze(self.df[self.x_axis]),
                               np.squeeze(self.df[fill]) + fill_height,
@@ -240,7 +243,7 @@ class BenchPlot():
                               )
             fill_height += self.df[fill].to_numpy()
 
-        axis.set_ylabel(r'$T_{\mathrm{wall}} \: [\%]$')
+        axis.set_ylabel(r'relative wall time $[\%]$')
 
         if self.x_ticks == 'data':
             axis.set_xticks(np.squeeze(self.df[self.x_axis]))
@@ -255,15 +258,23 @@ class BenchPlot():
 
     def plot_main(self, quantities, axis, log=(False, False)):
         for y in quantities:
-            axis.errorbar(
-                self.df[self.x_axis].values,
-                self.df[y].values,
-                yerr=self.df[y + '_std'].values,
-                marker='o',
-                capsize=3,
-                capthick=1,
-                label=self.label_params[y],
-                color=self.color_params[y])
+            if not error:
+                axis.plot(self.df[self.x_axis],
+                          self.df[y],
+                          marker=None,
+                          label=self.label_params[y],
+                          color=self.color_params[y],
+                          linewidth=2)
+            else:
+                axis.errorbar(
+                    self.df[self.x_axis].values,
+                    self.df[y].values,
+                    yerr=self.df[y + '_std'].values,
+                    marker=None,
+                    capsize=3,
+                    capthick=1,
+                    label=self.label_params[y],
+                    color=self.color_params[y])
 
         if self.x_ticks == 'data':
             axis.set_xticks(self.df[self.x_axis].values)

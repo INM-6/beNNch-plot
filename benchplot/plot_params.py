@@ -20,26 +20,30 @@ matplotlib_params = {
 additional_params = {
     'figsize_single': [6.1 * 1.5, 6.1],
     'figsize_double': [12.2, 6.1*1.1]
-    # 'figsize_double': [12.2*1.5, 6.1]
 }
 
 bright = tol_colors.tol_cset('bright')
 vibrant = tol_colors.tol_cset('vibrant')
+light = tol_colors.tol_cset('light')
 
 color_params = {
-    'wall_time_total': bright.grey,
-    'sim_factor': bright.purple,
-    'phase_total_factor': vibrant.orange,
-    'wall_time_sim': bright.purple,
-    'wall_time_create+wall_time_connect': bright.cyan,
-    'wall_time_phase_update': bright.red,
-    'wall_time_phase_deliver': vibrant.blue,
-    'wall_time_phase_communicate': bright.green,
-    'wall_time_phase_collocate': bright.yellow,
-    'frac_phase_update': bright.red,
-    'frac_phase_deliver': vibrant.blue,
-    'frac_phase_communicate': bright.green,
-    'frac_phase_collocate': bright.yellow,
+    'wall_time_total': light.pale_grey,
+    'sim_factor': light.pink,
+    'phase_total_factor': light.orange,
+    'wall_time_sim': light.pink,
+    'wall_time_create+wall_time_connect': light.light_cyan,
+    'wall_time_phase_update': light.orange,
+    'wall_time_phase_deliver': light.light_blue,
+    'wall_time_phase_communicate': light.mint,
+    'wall_time_phase_collocate': light.light_yellow,
+    'frac_phase_update': light.orange,
+    'frac_phase_deliver': light.light_blue,
+    'frac_phase_communicate': light.mint,
+    'frac_phase_collocate': light.light_yellow,
+    'phase_update_factor': light.orange,
+    'phase_deliver_factor': light.light_blue,
+    'phase_communicate_factor': light.mint,
+    'phase_collocate_factor': light.light_yellow,  
 }
 
 label_params = {
