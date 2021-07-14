@@ -54,3 +54,33 @@ c335d6fb-2fe0-4eb6-aa60-1dc4f91665c5:
   where:
   - jureca.fz-juelich.de
   - /p/project/cjinb33/albers2/ACA_bm_framework/BenchWork/jube_MAM/nest_3/000017
+
+3b737cd7-e7a6-4245-9d97-a76db18bf9b9:
+  hyperthreading: false
+  machine: JURECA-DC
+  notes:
+  - num vps per node: 128
+  - MPI process per node: 4
+  - threads per MPI proc: 32
+  - nest: 3.0 with timers
+  - mam_state: Fig5 (metastable)
+  plot_name: scaling_3.0_Fig5
+  reason: Benchmark comparison with NEST 2.14. with pytimers
+  where:
+  - jureca.fz-juelich.de
+  - /p/project/cjinb33/albers2/ACA_bm_framework/BenchWork/jube_MAM/nest_3/000017
+
+1b191ebe-ed9b-4850-8342-3ba1689df371:
+  hyperthreading: false
+  machine: JURECA-DC
+  notes:
+  - num vps per node: 128
+  - MPI process per node: 4
+  - threads per MPI proc: 32
+  - nest: 3.0 with timers
+  - mam_state: Fig5 (metastable)
+  plot_name: scaling_3.0_Fig5
+  reason: Benchmark comparison with NEST 2.14. with pytimers for presim time
+  where:
+  - jureca.fz-juelich.de
+  - /p/project/cjinb33/albers2/ACA_bm_framework/BenchWork/jube_MAM/nest_3/000019
