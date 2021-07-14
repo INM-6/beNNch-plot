@@ -91,6 +91,8 @@ class BenchPlot():
                          'py_time_connect']:
             if py_timer not in self.df:
                 self.df[py_timer] = np.nan
+                print('Warning! Python timers are not implemented. ' +
+                      'Construction time measurements will not be accurate.')
 
         dict_ = {'num_nodes': 'first',
                  'threads_per_task': 'first',
@@ -256,7 +258,8 @@ class BenchPlot():
             axis.get_xaxis().set_major_formatter(
                 matplotlib.ticker.ScalarFormatter())
 
-    def plot_main(self, quantities, axis, log=(False, False)):
+    def plot_main(self, quantities, axis, log=(False, False),
+                  error=False):
         for y in quantities:
             if not error:
                 axis.plot(self.df[self.x_axis],
