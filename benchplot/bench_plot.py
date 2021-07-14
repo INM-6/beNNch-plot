@@ -43,8 +43,7 @@ class BenchPlot():
                  additional_params=pp.additional_params,
                  label_params=pp.label_params,
                  manually_set_plot_name=None,
-                 time_scaling=1,
-                 average_over_runs=False):
+                 time_scaling=1):
         '''
         Initialize attributes. Use attributes to set up figure.
         '''
@@ -56,7 +55,6 @@ class BenchPlot():
         self.color_params = color_params
         self.label_params = label_params
         self.time_scaling = time_scaling
-        self.average_over_runs = average_over_runs
 
         self.load_data(data_hash, data_path, catalogue_path,
                        manually_set_plot_name)
@@ -87,77 +85,83 @@ class BenchPlot():
         if manually_set_plot_name is not None:
             self.plot_name = manually_set_plot_name
 
-        if self.average_over_runs:
-            dict_ = {'num_nodes': 'first',
-                     'threads_per_task': 'first',
-                     'tasks_per_node': 'first',
-                     'model_time_sim': 'first',
-                     'wall_time_create': ['mean', 'std'],
-                     'wall_time_connect': ['mean', 'std'],
-                     'wall_time_sim': ['mean', 'std'],
-                     'wall_time_phase_collocate': ['mean', 'std'],
-                     'wall_time_phase_communicate': ['mean', 'std'],
-                     'wall_time_phase_deliver': ['mean', 'std'],
-                     'wall_time_phase_update': ['mean', 'std'],
-                     'wall_time_communicate_target_data': ['mean', 'std'],
-                     'wall_time_gather_spike_data': ['mean', 'std'],
-                     'wall_time_gather_target_data': ['mean', 'std'],
-                     'wall_time_communicate_prepare': ['mean', 'std'],
-                     'py_time_prepare': ['mean', 'std'],
-                     'py_time_network_local': ['mean', 'std'],
-                     'py_time_network_global': ['mean', 'std'],
-                     'py_time_init': ['mean', 'std'],
-                     'py_time_simulate': ['mean', 'std'],
-                     'py_time_create': ['mean', 'std'],
-                     'py_time_connect': ['mean', 'std'],
-                     'base_memory': ['mean', 'std'],
-                     'network_memory': ['mean', 'std'],
-                     'init_memory': ['mean', 'std'],
-                     'total_memory': ['mean', 'std'],
-                     'num_connections': ['mean', 'std'],
-                     'local_spike_counter': ['mean', 'std'],
+        for py_timer in ['py_time_prepare', 'py_time_network_local',
+                         'py_time_network_global', 'py_time_init',
+                         'py_time_simulate', 'py_time_create',
+                         'py_time_connect']:
+            if py_timer not in self.df:
+                self.df[py_timer] = np.nan
 
-                     }
+        dict_ = {'num_nodes': 'first',
+                 'threads_per_task': 'first',
+                 'tasks_per_node': 'first',
+                 'model_time_sim': 'first',
+                 'wall_time_create': ['mean', 'std'],
+                 'wall_time_connect': ['mean', 'std'],
+                 'wall_time_sim': ['mean', 'std'],
+                 'wall_time_phase_collocate': ['mean', 'std'],
+                 'wall_time_phase_communicate': ['mean', 'std'],
+                 'wall_time_phase_deliver': ['mean', 'std'],
+                 'wall_time_phase_update': ['mean', 'std'],
+                 'wall_time_communicate_target_data': ['mean', 'std'],
+                 'wall_time_gather_spike_data': ['mean', 'std'],
+                 'wall_time_gather_target_data': ['mean', 'std'],
+                 'wall_time_communicate_prepare': ['mean', 'std'],
+                 'py_time_prepare': ['mean', 'std'],
+                 'py_time_network_local': ['mean', 'std'],
+                 'py_time_network_global': ['mean', 'std'],
+                 'py_time_init': ['mean', 'std'],
+                 'py_time_simulate': ['mean', 'std'],
+                 'py_time_create': ['mean', 'std'],
+                 'py_time_connect': ['mean', 'std'],
+                 'base_memory': ['mean', 'std'],
+                 'network_memory': ['mean', 'std'],
+                 'init_memory': ['mean', 'std'],
+                 'total_memory': ['mean', 'std'],
+                 'num_connections': ['mean', 'std'],
+                 'local_spike_counter': ['mean', 'std'],
 
-            col = ['num_nodes', 'threads_per_task', 'tasks_per_node',
-                   'model_time_sim', 'wall_time_create',
-                   'wall_time_create_std', 'wall_time_connect',
-                   'wall_time_connect_std', 'wall_time_sim',
-                   'wall_time_sim_std', 'wall_time_phase_collocate',
-                   'wall_time_phase_collocate_std', 'wall_time_phase_communicate',
-                   'wall_time_phase_communicate_std', 'wall_time_phase_deliver',
-                   'wall_time_phase_deliver_std', 'wall_time_phase_update',
-                   'wall_time_phase_update_std',
-                   'wall_time_communicate_target_data',
-                   'wall_time_communicate_target_data_std',
-                   'wall_time_gather_spike_data',
-                   'wall_time_gather_spike_data_std',
-                   'wall_time_gather_target_data',
-                   'wall_time_gather_target_data_std',
-                   'wall_time_communicate_prepare',
-                   'wall_time_communicate_prepare_std',
-                   'py_time_prepare', 'py_time_prepare_std',
-                   'py_time_network_local', 'py_time_network_local_std',
-                   'py_time_network_global', 'py_time_network_global_std',
-                   'py_time_init', 'py_time_init_std',
-                   'py_time_simulate', 'py_time_simulate_std',
-                   'py_time_create', 'py_time_create_std',
-                   'py_time_connect', 'py_time_connect_std',
-                   'base_memory', 'base_memory_std',
-                   'network_memory', 'network_memory_std',
-                   'init_memory', 'init_memory_std',
-                   'total_memory', 'total_memory_std',
-                   'num_connections', 'num_connections_std',
-                   'local_spike_counter', 'local_spike_counter_std']
+                 }
 
-            self.df = self.df[~self.df['wall_time_communicate_target_data'].isna(
-            )].reset_index().drop('index', axis=1)
-            self.df = self.df.drop('MASTER_SEED', axis=1).groupby(
-                ['num_nodes',
-                 'threads_per_task',
-                 'tasks_per_node',
-                 'model_time_sim'], as_index=False).agg(dict_)
-            self.df.columns = col
+        col = ['num_nodes', 'threads_per_task', 'tasks_per_node',
+               'model_time_sim', 'wall_time_create',
+               'wall_time_create_std', 'wall_time_connect',
+               'wall_time_connect_std', 'wall_time_sim',
+               'wall_time_sim_std', 'wall_time_phase_collocate',
+               'wall_time_phase_collocate_std', 'wall_time_phase_communicate',
+               'wall_time_phase_communicate_std', 'wall_time_phase_deliver',
+               'wall_time_phase_deliver_std', 'wall_time_phase_update',
+               'wall_time_phase_update_std',
+               'wall_time_communicate_target_data',
+               'wall_time_communicate_target_data_std',
+               'wall_time_gather_spike_data',
+               'wall_time_gather_spike_data_std',
+               'wall_time_gather_target_data',
+               'wall_time_gather_target_data_std',
+               'wall_time_communicate_prepare',
+               'wall_time_communicate_prepare_std',
+               'py_time_prepare', 'py_time_prepare_std',
+               'py_time_network_local', 'py_time_network_local_std',
+               'py_time_network_global', 'py_time_network_global_std',
+               'py_time_init', 'py_time_init_std',
+               'py_time_simulate', 'py_time_simulate_std',
+               'py_time_create', 'py_time_create_std',
+               'py_time_connect', 'py_time_connect_std',
+               'base_memory', 'base_memory_std',
+               'network_memory', 'network_memory_std',
+               'init_memory', 'init_memory_std',
+               'total_memory', 'total_memory_std',
+               'num_connections', 'num_connections_std',
+               'local_spike_counter', 'local_spike_counter_std']
+
+        self.df = self.df[~self.df['wall_time_communicate_target_data'].isna(
+        )].reset_index().drop('index', axis=1)
+        self.df = self.df.drop('MASTER_SEED', axis=1).groupby(
+            ['num_nodes',
+             'threads_per_task',
+             'tasks_per_node',
+             'model_time_sim'], as_index=False).agg(dict_)
+        self.df.columns = col
 
     def compute_derived_quantities(self):
         self.df['num_nvp'] = (
