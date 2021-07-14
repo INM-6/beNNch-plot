@@ -86,53 +86,74 @@ class BenchPlot():
             self.plot_name = manually_set_plot_name
 
         dict_ = {'num_nodes': 'first',
-                'threads_per_task': 'first',
-                'tasks_per_node': 'first',
-                'model_time_sim': 'first',
-                'wall_time_create': ['mean', 'std'],
-                'wall_time_connect': ['mean', 'std'],
-                'wall_time_sim': ['mean', 'std'],
-                'wall_time_phase_collocate': ['mean', 'std'],
-                'wall_time_phase_communicate': ['mean', 'std'],
-                'wall_time_phase_deliver': ['mean', 'std'],
-                'wall_time_phase_update': ['mean', 'std'],
-                'wall_time_communicate_target_data': ['mean', 'std'],
-                'wall_time_gather_spike_data': ['mean', 'std'],
-                'wall_time_gather_target_data': ['mean', 'std'],
-                'wall_time_communicate_prepare': ['mean', 'std'],
-                'py_time_prepare': ['mean', 'std'],
-                'py_time_network_local': ['mean', 'std'],
-                'py_time_network_global': ['mean', 'std'],
-                'py_time_init': ['mean', 'std'],
-                'py_time_simulate': ['mean', 'std'],
-                'py_time_create': ['mean', 'std'],
-                'py_time_connect': ['mean', 'std'],
-                'base_memory': ['mean', 'std'],
-                'network_memory': ['mean', 'std'],
-                'init_memory': ['mean', 'std'],
-                'total_memory': ['mean', 'std'],
-                'num_connections': ['mean', 'std'],
-                'local_spike_counter': ['mean', 'std'],
+                 'threads_per_task': 'first',
+                 'tasks_per_node': 'first',
+                 'model_time_sim': 'first',
+                 'wall_time_create': ['mean', 'std'],
+                 'wall_time_connect': ['mean', 'std'],
+                 'wall_time_sim': ['mean', 'std'],
+                 'wall_time_phase_collocate': ['mean', 'std'],
+                 'wall_time_phase_communicate': ['mean', 'std'],
+                 'wall_time_phase_deliver': ['mean', 'std'],
+                 'wall_time_phase_update': ['mean', 'std'],
+                 'wall_time_communicate_target_data': ['mean', 'std'],
+                 'wall_time_gather_spike_data': ['mean', 'std'],
+                 'wall_time_gather_target_data': ['mean', 'std'],
+                 'wall_time_communicate_prepare': ['mean', 'std'],
+                 'py_time_prepare': ['mean', 'std'],
+                 'py_time_network_local': ['mean', 'std'],
+                 'py_time_network_global': ['mean', 'std'],
+                 'py_time_init': ['mean', 'std'],
+                 'py_time_simulate': ['mean', 'std'],
+                 'py_time_create': ['mean', 'std'],
+                 'py_time_connect': ['mean', 'std'],
+                 'base_memory': ['mean', 'std'],
+                 'network_memory': ['mean', 'std'],
+                 'init_memory': ['mean', 'std'],
+                 'total_memory': ['mean', 'std'],
+                 'num_connections': ['mean', 'std'],
+                 'local_spike_counter': ['mean', 'std'],
 
-                }
+                 }
 
-        col = ['num_nodes', 'threads_per_task', 'tasks_per_node', 'model_time_sim', 'wall_time_create', 'wall_time_create_std', 'wall_time_connect', 'wall_time_connect_std', 'wall_time_sim', 'wall_time_sim_std', 'wall_time_phase_collocate', 'wall_time_phase_collocate_std', 'wall_time_phase_communicate', 'wall_time_phase_communicate_std', 'wall_time_phase_deliver', 'wall_time_phase_deliver_std', 'wall_time_phase_update', 'wall_time_phase_update_std', 'wall_time_communicate_target_data', 'wall_time_communicate_target_data_std', 'wall_time_gather_spike_data', 'wall_time_gather_spike_data_std', 'wall_time_gather_target_data', 'wall_time_gather_target_data_std', 'wall_time_communicate_prepare', 'wall_time_communicate_prepare_std',
-        'py_time_prepare', 'py_time_prepare_std',
-        'py_time_network_local', 'py_time_network_local_std',
-        'py_time_network_global', 'py_time_network_global_std',
-        'py_time_init', 'py_time_init_std',
-        'py_time_simulate', 'py_time_simulate_std',
-        'py_time_create', 'py_time_create_std',
-        'py_time_connect', 'py_time_connect_std',
-        'base_memory', 'base_memory_std',
-        'network_memory', 'network_memory_std',
-        'init_memory', 'init_memory_std',
-        'total_memory', 'total_memory_std',
-        'num_connections', 'num_connections_std',
-        'local_spike_counter', 'local_spike_counter_std']
+        col = ['num_nodes', 'threads_per_task', 'tasks_per_node',
+               'model_time_sim', 'wall_time_create',
+               'wall_time_create_std', 'wall_time_connect',
+               'wall_time_connect_std', 'wall_time_sim',
+               'wall_time_sim_std', 'wall_time_phase_collocate',
+               'wall_time_phase_collocate_std', 'wall_time_phase_communicate',
+               'wall_time_phase_communicate_std', 'wall_time_phase_deliver',
+               'wall_time_phase_deliver_std', 'wall_time_phase_update',
+               'wall_time_phase_update_std',
+               'wall_time_communicate_target_data',
+               'wall_time_communicate_target_data_std',
+               'wall_time_gather_spike_data',
+               'wall_time_gather_spike_data_std',
+               'wall_time_gather_target_data',
+               'wall_time_gather_target_data_std',
+               'wall_time_communicate_prepare',
+               'wall_time_communicate_prepare_std',
+               'py_time_prepare', 'py_time_prepare_std',
+               'py_time_network_local', 'py_time_network_local_std',
+               'py_time_network_global', 'py_time_network_global_std',
+               'py_time_init', 'py_time_init_std',
+               'py_time_simulate', 'py_time_simulate_std',
+               'py_time_create', 'py_time_create_std',
+               'py_time_connect', 'py_time_connect_std',
+               'base_memory', 'base_memory_std',
+               'network_memory', 'network_memory_std',
+               'init_memory', 'init_memory_std',
+               'total_memory', 'total_memory_std',
+               'num_connections', 'num_connections_std',
+               'local_spike_counter', 'local_spike_counter_std']
 
-        self.df = self.df[~self.df['wall_time_communicate_target_data'].isna()].reset_index().drop('index', axis=1)
-        self.df = self.df.drop('MASTER_SEED', axis=1).groupby(['num_nodes', 'threads_per_task', 'tasks_per_node', 'model_time_sim'], as_index=False).agg(dict_)
+        self.df = self.df[~self.df['wall_time_communicate_target_data'].isna(
+        )].reset_index().drop('index', axis=1)
+        self.df = self.df.drop('MASTER_SEED', axis=1).groupby(
+            ['num_nodes',
+             'threads_per_task',
+             'tasks_per_node',
+             'model_time_sim'], as_index=False).agg(dict_)
         self.df.columns = col
 
     def compute_derived_quantities(self):
@@ -143,26 +164,30 @@ class BenchPlot():
         self.df['wall_time_create+wall_time_connect'] = (
             self.df['py_time_create'] + self.df['py_time_connect'])
         self.df['wall_time_create+wall_time_connect_std'] = (
-            np.sqrt(self.df['wall_time_create_std']**2 + self.df['wall_time_connect_std']**2))
+            np.sqrt((self.df['wall_time_create_std']**2
+                     + self.df['wall_time_connect_std']**2)))
         self.df['sim_factor'] = (self.df['wall_time_sim']
                                  / self.df['model_time_sim'])
         self.df['sim_factor_std'] = (self.df['wall_time_sim_std']
-                                 / self.df['model_time_sim'])
-        self.df['wall_time_phase_total'] = (self.df['wall_time_phase_update']
-                                            + self.df['wall_time_phase_communicate']
-                                            + self.df['wall_time_phase_deliver']
-                                            + self.df['wall_time_phase_collocate'])
+                                     / self.df['model_time_sim'])
+        self.df['wall_time_phase_total'] = (
+            self.df['wall_time_phase_update']
+            + self.df['wall_time_phase_communicate']
+            + self.df['wall_time_phase_deliver']
+            + self.df['wall_time_phase_collocate'])
         self.df['wall_time_phase_total_std'] = \
-                                            np.sqrt(
-                                                self.df['wall_time_phase_update_std']**2
-                                                + self.df['wall_time_phase_communicate_std']**2
-                                                + self.df['wall_time_phase_deliver_std']**2
-                                                + self.df['wall_time_phase_collocate_std']**2
-                                                )
-        self.df['phase_total_factor'] = (self.df['wall_time_phase_total']
-                                         / self.df['model_time_sim'])
-        self.df['phase_total_factor_std'] = (self.df['wall_time_phase_total_std']
-                                         / self.df['model_time_sim'])
+            np.sqrt(
+            self.df['wall_time_phase_update_std']**2
+            + self.df['wall_time_phase_communicate_std']**2
+            + self.df['wall_time_phase_deliver_std']**2
+            + self.df['wall_time_phase_collocate_std']**2
+        )
+        self.df['phase_total_factor'] = (
+            self.df['wall_time_phase_total']
+            / self.df['model_time_sim'])
+        self.df['phase_total_factor_std'] = (
+            self.df['wall_time_phase_total_std']
+            / self.df['model_time_sim'])
 
         for phase in ['update', 'communicate', 'deliver', 'collocate']:
             self.df['phase_' + phase + '_factor'] = (
@@ -224,14 +249,14 @@ class BenchPlot():
     def plot_main(self, quantities, axis, log=(False, False)):
         for y in quantities:
             axis.errorbar(
-                      self.df[self.x_axis].values,
-                      self.df[y].values,
-                      yerr=self.df[y + '_std'].values,
-                      marker='o',
-                      capsize=3,
-                      capthick=1,
-                      label=self.label_params[y],
-                      color=self.color_params[y])
+                self.df[self.x_axis].values,
+                self.df[y].values,
+                yerr=self.df[y + '_std'].values,
+                marker='o',
+                capsize=3,
+                capthick=1,
+                label=self.label_params[y],
+                color=self.color_params[y])
 
         if self.x_ticks == 'data':
             axis.set_xticks(self.df[self.x_axis].values)
@@ -249,4 +274,4 @@ class BenchPlot():
             ax2.get_legend_handles_labels(),
             ax1.get_legend_handles_labels())]
         ax1.legend(handles, labels, loc='upper right')
-        #ax1.set_xticklabels('')
+        # ax1.set_xticklabels('')
