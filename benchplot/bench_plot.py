@@ -86,7 +86,7 @@ class BenchPlot():
             self.plot_name = manually_set_plot_name
 
         dict_ = {'num_nodes': 'first',
-                'threads_per_node': 'first',
+                'threads_per_task': 'first',
                 'tasks_per_node': 'first',
                 'model_time_sim': 'first',
                 'wall_time_create': ['mean', 'std'],
@@ -116,7 +116,7 @@ class BenchPlot():
 
                 }
 
-        col = ['num_nodes', 'threads_per_node', 'tasks_per_node', 'model_time_sim', 'wall_time_create', 'wall_time_create_std', 'wall_time_connect', 'wall_time_connect_std', 'wall_time_sim', 'wall_time_sim_std', 'wall_time_phase_collocate', 'wall_time_phase_collocate_std', 'wall_time_phase_communicate', 'wall_time_phase_communicate_std', 'wall_time_phase_deliver', 'wall_time_phase_deliver_std', 'wall_time_phase_update', 'wall_time_phase_update_std', 'wall_time_communicate_target_data', 'wall_time_communicate_target_data_std', 'wall_time_gather_spike_data', 'wall_time_gather_spike_data_std', 'wall_time_gather_target_data', 'wall_time_gather_target_data_std', 'wall_time_communicate_prepare', 'wall_time_communicate_prepare_std',
+        col = ['num_nodes', 'threads_per_task', 'tasks_per_node', 'model_time_sim', 'wall_time_create', 'wall_time_create_std', 'wall_time_connect', 'wall_time_connect_std', 'wall_time_sim', 'wall_time_sim_std', 'wall_time_phase_collocate', 'wall_time_phase_collocate_std', 'wall_time_phase_communicate', 'wall_time_phase_communicate_std', 'wall_time_phase_deliver', 'wall_time_phase_deliver_std', 'wall_time_phase_update', 'wall_time_phase_update_std', 'wall_time_communicate_target_data', 'wall_time_communicate_target_data_std', 'wall_time_gather_spike_data', 'wall_time_gather_spike_data_std', 'wall_time_gather_target_data', 'wall_time_gather_target_data_std', 'wall_time_communicate_prepare', 'wall_time_communicate_prepare_std',
         'py_time_prepare', 'py_time_prepare_std',
         'py_time_network_local', 'py_time_network_local_std',
         'py_time_network_global', 'py_time_network_global_std',
@@ -132,12 +132,12 @@ class BenchPlot():
         'local_spike_counter', 'local_spike_counter_std']
 
         self.df = self.df[~self.df['wall_time_communicate_target_data'].isna()].reset_index().drop('index', axis=1)
-        self.df = self.df.drop('MASTER_SEED', axis=1).groupby(['num_nodes', 'threads_per_node', 'tasks_per_node', 'model_time_sim'], as_index=False).agg(dict_)
+        self.df = self.df.drop('MASTER_SEED', axis=1).groupby(['num_nodes', 'threads_per_task', 'tasks_per_node', 'model_time_sim'], as_index=False).agg(dict_)
         self.df.columns = col
 
     def compute_derived_quantities(self):
         self.df['num_nvp'] = (
-            self.df['threads_per_node'] * self.df['tasks_per_node']
+            self.df['threads_per_task'] * self.df['tasks_per_node']
         )
         self.df['model_time_sim'] /= self.time_scaling
         self.df['wall_time_create+wall_time_connect'] = (
