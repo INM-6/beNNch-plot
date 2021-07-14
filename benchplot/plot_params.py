@@ -20,29 +20,11 @@ matplotlib_params = {
 additional_params = {
     'figsize_single': [6.1 * 1.5, 6.1],
     'figsize_double': [12.2, 6.1*1.1]
-    # 'figsize_double': [12.2*1.5, 6.1]
 }
 
 bright = tol_colors.tol_cset('bright')
 vibrant = tol_colors.tol_cset('vibrant')
 light = tol_colors.tol_cset('light')
-
-# color_params = {
-#     'wall_time_total': bright.grey,
-#     'sim_factor': bright.purple,
-#     'phase_total_factor': vibrant.orange,
-#     'wall_time_sim': bright.purple,
-#     'wall_time_creation+wall_time_connect': bright.cyan,
-#     'wall_time_phase_update': bright.red,
-#     'wall_time_phase_deliver': vibrant.blue,
-#     'wall_time_phase_communicate': bright.green,
-#     'frac_phase_update': bright.red,
-#     'phase_update_factor': bright.red,
-#     'frac_phase_deliver': vibrant.blue,
-#     'phase_deliver_factor': vibrant.blue,
-#     'frac_phase_communicate': bright.green,
-#     'phase_communicate_factor': bright.green,
-# }
 
 color_params = {
     'wall_time_total': light.pale_grey,
