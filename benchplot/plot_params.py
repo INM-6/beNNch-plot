@@ -43,7 +43,9 @@ color_params = {
     'phase_update_factor': light.orange,
     'phase_deliver_factor': light.light_blue,
     'phase_communicate_factor': light.mint,
-    'phase_collocate_factor': light.light_yellow,  
+    'phase_collocate_factor': light.light_yellow,
+    'total_memory': light.olive,
+    'total_memory_per_node': light.pear,
 }
 
 label_params = {
@@ -72,5 +74,8 @@ label_params = {
     'phase_communicate_factor': 'communicate factor',
     'phase_deliver_factor': 'deliver factor',
     'phase_collocate_factor': 'collocate factor',
-    'phase_total_factor': 'all phases'
+    'phase_total_factor': 'all phases',
+    'total_memory': 'memory',
+    'total_memory_per_node': 'memory per node',
+
 }

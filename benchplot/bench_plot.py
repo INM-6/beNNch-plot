@@ -201,6 +201,10 @@ class BenchPlot():
             self.df['frac_phase_' + phase + '_std'] = (
                 100 * self.df['wall_time_phase_' + phase + '_std']
                 / self.df['wall_time_phase_total'])
+        self.df['total_memory_per_node'] = (self.df['total_memory']
+                                      / self.df['num_nodes'])
+        self.df['total_memory_per_node_std'] = (self.df['total_memory_std']
+                                      / self.df['num_nodes'])
 
     def plot_fractions(self, axis, fill_variables,
                        interpolate=False, step=None, log=False, alpha=1.,
