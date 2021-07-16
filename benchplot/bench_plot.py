@@ -85,10 +85,7 @@ class BenchPlot():
         if manually_set_plot_name is not None:
             self.plot_name = manually_set_plot_name
 
-        for py_timer in ['py_time_prepare', 'py_time_network_local',
-                         'py_time_network_global', 'py_time_init',
-                         'py_time_simulate', 'py_time_create',
-                         'py_time_connect']:
+        for py_timer in ['py_time_create', 'py_time_connect']:
             if py_timer not in self.df:
                 self.df[py_timer] = np.nan
                 print('Warning! Python timers are not implemented. ' +
@@ -109,11 +106,6 @@ class BenchPlot():
                  'wall_time_gather_spike_data': ['mean', 'std'],
                  'wall_time_gather_target_data': ['mean', 'std'],
                  'wall_time_communicate_prepare': ['mean', 'std'],
-                 'py_time_prepare': ['mean', 'std'],
-                 'py_time_network_local': ['mean', 'std'],
-                 'py_time_network_global': ['mean', 'std'],
-                 'py_time_init': ['mean', 'std'],
-                 'py_time_simulate': ['mean', 'std'],
                  'py_time_create': ['mean', 'std'],
                  'py_time_connect': ['mean', 'std'],
                  'base_memory': ['mean', 'std'],
@@ -142,11 +134,6 @@ class BenchPlot():
                'wall_time_gather_target_data_std',
                'wall_time_communicate_prepare',
                'wall_time_communicate_prepare_std',
-               'py_time_prepare', 'py_time_prepare_std',
-               'py_time_network_local', 'py_time_network_local_std',
-               'py_time_network_global', 'py_time_network_global_std',
-               'py_time_init', 'py_time_init_std',
-               'py_time_simulate', 'py_time_simulate_std',
                'py_time_create', 'py_time_create_std',
                'py_time_connect', 'py_time_connect_std',
                'base_memory', 'base_memory_std',
@@ -158,7 +145,7 @@ class BenchPlot():
 
         self.df = self.df[~self.df['wall_time_communicate_target_data'].isna(
         )].reset_index().drop('index', axis=1)
-        self.df = self.df.drop('MASTER_SEED', axis=1).groupby(
+        self.df = self.df.drop('master_seed', axis=1).groupby(
             ['num_nodes',
              'threads_per_task',
              'tasks_per_node',
