@@ -50,3 +50,19 @@ ef8839ce-824c-11eb-aa99-4bdf3bfd375d:
     where:
         - judac.fz-juelich.de
         - /p/project/icei-hbp-2020-0006/microcircuit_jube_benches
+
+1c801424-90d9-447d-91e9-a9839a2f6b2f:
+    machine: JUSUF
+    hyperthreading: OFF
+    notes:
+        - num vps per node: 4,8,16,32,64,128
+        - MPI process per node: 2,4,8,16,32,64
+        - threads per MPI proc: 2
+        - nest: 3.0 with timers
+    module: nest-simulator/3.0
+    plot_name: jusuf_mc
+    reason: default on jusuf for plotting
+    where:
+        - judac.fz-juelich.de
+        - /p/project/icei-hbp-2020-0006/ACA_bm_framework/benchmark_results/microcircuit/000012
+        

@@ -21,8 +21,6 @@ class BenchPlot():
         unique identifier of experiment to be plotted
     x_axis : str or list
         variable to be plotted on x-axis
-    log_axes : tuple of bools
-        display x, y axis in log scale
 
     matplotlib_params : dict
         parameters passed to matplotlib
@@ -33,7 +31,6 @@ class BenchPlot():
    '''
 
     def __init__(self, x_axis,
-                 log_axes=(False, False),
                  x_ticks='data',
                  data_hash=None,
                  data_path='/path/to/data',
@@ -138,7 +135,7 @@ class BenchPlot():
 
         self.df = self.df[~self.df['wall_time_communicate_target_data'].isna(
         )].reset_index().drop('index', axis=1)
-        self.df = self.df.drop('master_seed', axis=1).groupby(
+        self.df = self.df.drop('rng_seed', axis=1).groupby(
             ['num_nodes',
              'threads_per_task',
              'tasks_per_node',
@@ -228,8 +225,6 @@ class BenchPlot():
                               color='k'
                               )
             fill_height += self.df[fill].to_numpy()
-
-        axis.set_ylabel(r'relative wall time $[\%]$')
 
         if self.x_ticks == 'data':
             axis.set_xticks(np.squeeze(self.df[self.x_axis]))
