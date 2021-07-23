@@ -42,7 +42,6 @@ class BenchPlot():
                  color_params=pp.color_params,
                  additional_params=pp.additional_params,
                  label_params=pp.label_params,
-                 manually_set_plot_name=None,
                  time_scaling=1):
         '''
         Initialize attributes. Use attributes to set up figure.
@@ -56,12 +55,10 @@ class BenchPlot():
         self.label_params = label_params
         self.time_scaling = time_scaling
 
-        self.load_data(data_hash, data_path, catalogue_path,
-                       manually_set_plot_name)
+        self.load_data(data_hash, data_path, catalogue_path)
         self.compute_derived_quantities()
 
-    def load_data(self, data_hash, data_path, catalogue_path,
-                  manually_set_plot_name):
+    def load_data(self, data_hash, data_path, catalogue_path):
         if data_hash is None:
             # data path points directly to file
             try:
@@ -72,7 +69,6 @@ class BenchPlot():
         else:
             with open(catalogue_path, 'r') as c:
                 catalogue = yaml.safe_load(c)
-            self.plot_name = catalogue[data_hash]['plot_name']
 
             data_path = os.path.join(data_path, data_hash + '.csv')
 
@@ -81,9 +77,6 @@ class BenchPlot():
             except FileNotFoundError:
                 print('File could not be found')
                 quit()
-
-        if manually_set_plot_name is not None:
-            self.plot_name = manually_set_plot_name
 
         for py_timer in ['py_time_create', 'py_time_connect']:
             if py_timer not in self.df:
