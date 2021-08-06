@@ -17,8 +17,6 @@ class BenchPlot():
 
     Attributes
     ----------
-    data_hash : str or list
-        unique identifier of experiment to be plotted
     x_axis : str or list
         variable to be plotted on x-axis
 
@@ -32,8 +30,7 @@ class BenchPlot():
 
     def __init__(self, x_axis,
                  x_ticks='data',
-                 data_hash=None,
-                 data_path='/path/to/data',
+                 data_file='/path/to/data',
                  matplotlib_params=pp.matplotlib_params,
                  color_params=pp.color_params,
                  additional_params=pp.additional_params,
@@ -51,24 +48,15 @@ class BenchPlot():
         self.label_params = label_params
         self.time_scaling = time_scaling
 
-        self.load_data(data_hash, data_path)
+        self.load_data(data_file)
         self.compute_derived_quantities()
 
-    def load_data(self, data_hash, data_path):
-        if data_hash is None:
-            # data path points directly to file
-            try:
-                self.df = pd.read_csv(data_path, delimiter=',')
-            except FileNotFoundError:
-                print('File could not be found')
-                quit()
-        else:
-            data_path = os.path.join(data_path, data_hash + '.csv')
-            try:
-                self.df = pd.read_csv(data_path, delimiter=',')
-            except FileNotFoundError:
-                print('File could not be found')
-                quit()
+    def load_data(self, data_file):
+        try:
+            self.df = pd.read_csv(data_file, delimiter=',')
+        except FileNotFoundError:
+            print('File could not be found')
+            quit()
 
         for py_timer in ['py_time_create', 'py_time_connect']:
             if py_timer not in self.df:
