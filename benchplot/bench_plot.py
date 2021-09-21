@@ -115,16 +115,12 @@ class BenchPlot():
                'total_memory', 'total_memory_std',
                'num_connections', 'num_connections_std',
                'local_spike_counter', 'local_spike_counter_std']
-
-        self.df = self.df[~self.df['wall_time_communicate_target_data'].isna(
-        )].reset_index().drop('index', axis=1)
         self.df = self.df.drop('rng_seed', axis=1).groupby(
             ['num_nodes',
              'threads_per_task',
              'tasks_per_node',
              'model_time_sim'], as_index=False).agg(dict_)
         self.df.columns = col
-
     def compute_derived_quantities(self):
         self.df['num_nvp'] = (
             self.df['threads_per_task'] * self.df['tasks_per_node']
@@ -258,3 +254,12 @@ class BenchPlot():
             ax1.get_legend_handles_labels())]
         ax1.legend(handles, labels, loc='upper right')
         # ax1.set_xticklabels('')
+
+    def simple_axis(self, ax):
+        # Hide the right and top spines
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+
+        # Only show ticks on the left and bottom spines
+        ax.yaxis.set_ticks_position('left')
+        ax.xaxis.set_ticks_position('bottom')
