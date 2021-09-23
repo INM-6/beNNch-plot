@@ -61,7 +61,7 @@ class BenchPlot():
         for py_timer in ['py_time_create', 'py_time_connect']:
             if py_timer not in self.df:
                 self.df[py_timer] = np.nan
-                print('Warning! Python timers are not implemented. ' +
+                raise ValueError('Warning! Python timers are not found. ' +
                       'Construction time measurements will not be accurate.')
 
         dict_ = {'num_nodes': 'first',
