@@ -193,7 +193,7 @@ class BenchPlot():
                               interpolate=interpolate,
                               step=step,
                               alpha=alpha,
-                              linewidth=1,
+                              linewidth=0.5,
                               edgecolor='#444444')
             if error:
                 axis.errorbar(np.squeeze(self.df[self.x_axis]),
@@ -201,7 +201,8 @@ class BenchPlot():
                               yerr=np.squeeze(self.df[fill + '_std']),
                               capsize=3,
                               capthick=1,
-                              color='k'
+                              color='k',
+                              fmt='none'
                               )
             fill_height += self.df[fill].to_numpy()
 
@@ -235,7 +236,8 @@ class BenchPlot():
                     capsize=3,
                     capthick=1,
                     label=self.label_params[y],
-                    color=self.color_params[y])
+                    color=self.color_params[y],
+                    fmt='none')
 
         if self.x_ticks == 'data':
             axis.set_xticks(self.df[self.x_axis].values)
