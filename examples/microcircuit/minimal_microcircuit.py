@@ -37,7 +37,7 @@ B.plot_fractions(axis=ax2,
                  )
 
 ax1.set_ylabel(r'real-time factor $T_{\mathrm{wall}}/$'
-              r'$T_{\mathrm{model}}$')
+               r'$T_{\mathrm{model}}$')
 ax1.set_xlabel('number of vps')
 ax1.legend()
 ax2.set_ylabel(r'relative wall time $[\%]$')
