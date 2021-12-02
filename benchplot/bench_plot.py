@@ -220,7 +220,7 @@ class BenchPlot():
                 matplotlib.ticker.ScalarFormatter())
 
     def plot_main(self, quantities, axis, log=(False, False),
-                  error=False):
+                  error=False, fmt='none'):
         for y in quantities:
             if not error:
                 axis.plot(self.df[self.x_axis],
@@ -239,7 +239,7 @@ class BenchPlot():
                     capthick=1,
                     label=self.label_params[y],
                     color=self.color_params[y],
-                    fmt='none')
+                    fmt=fmt)
 
         if self.x_ticks == 'data':
             axis.set_xticks(self.df[self.x_axis].values)
