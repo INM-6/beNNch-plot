@@ -4,6 +4,18 @@ from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 
 
+"""
+define what to plot:
+- data_file:
+    Path to .csv file containing benchmarking measurements.
+- x_axis:
+    Giving a list of strings corresponding to the main scaling
+    variable, typically 'num_nodes' or 'num_nvp'.
+- time_scaling:
+    Quotient between unit time of timing measurement and
+    simulation. Usually, the former is given in s while
+    the latter is given in ms. 
+"""
 args = {
     'data_file': '45011f6d-c3c2-4f2c-b884-af04e9edc5b9.csv',
     'x_axis': ['num_nodes'],
@@ -14,7 +26,7 @@ args = {
 # Instantiate class
 B = bp.BenchPlot(**args)
 
-# Plotting
+# Figure layout
 widths = [1, 1]
 heights = [3, 1]
 fig = plt.figure(figsize=(12, 6), constrained_layout=True)
@@ -25,7 +37,7 @@ ax1 = fig.add_subplot(spec[:, 0])
 ax2 = fig.add_subplot(spec[0, 1])
 ax3 = fig.add_subplot(spec[1, 1])
 
-
+# Add plots
 B.plot_fractions(axis=ax1,
                  fill_variables=['wall_time_create+wall_time_connect',
                                  'wall_time_sim'],
@@ -46,7 +58,8 @@ B.plot_fractions(axis=ax3,
                      'frac_phase_update',
                      'frac_phase_deliver'])
 
-ax2.set_ylim(0,300)
+# Set labels, limits etc.
+ax2.set_ylim(0, 300)
 B.simple_axis(ax1)
 B.simple_axis(ax2)
 
@@ -61,4 +74,5 @@ ax3.set_ylabel(r'relative $T_{\mathrm{wall}}$ [%]')
 ax1.legend()
 ax2.legend()
 
+# Save figure
 plt.savefig('scaling.pdf')

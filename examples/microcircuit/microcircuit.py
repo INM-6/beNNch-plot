@@ -4,13 +4,25 @@ from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 
 
+"""
+define what to plot:
+- data_file:
+    Path to .csv file containing benchmarking measurements.
+- x_axis:
+    Giving a list of strings corresponding to the main scaling
+    variable, typically 'num_nodes' or 'num_nvp'.
+- time_scaling:
+    Quotient between unit time of timing measurement and
+    simulation. Usually, the former is given in s while
+    the latter is given in ms. 
+"""
 args = {
     'data_file': '8d196bc5-b5f5-448b-8571-bf695ed64d4a.csv',
     'x_axis': ['num_nvp'],
     'time_scaling': 1e3
 }
 
-# Instantiate class
+# Figure layout
 B = bp.BenchPlot(**args)
 
 # Plotting
@@ -23,7 +35,7 @@ spec = gridspec.GridSpec(ncols=1, nrows=2, figure=fig, width_ratios=widths,
 ax1 = fig.add_subplot(spec[0, :])
 ax2 = fig.add_subplot(spec[1, :])
 
-
+# Add plots
 B.plot_main(quantities=['sim_factor'], axis=ax1, log=(False, True))
 B.plot_fractions(axis=ax2,
                  fill_variables=[
@@ -34,10 +46,12 @@ B.plot_fractions(axis=ax2,
                  ],
                  )
 
+# Set labels, limits etc.
 ax1.set_ylabel(r'$T_{\mathrm{wall}}$ [s] for $T_{\mathrm{model}} =$'
                + f'{np.unique(B.df.model_time_sim.values)[0]} s')
 ax1.set_xlabel('Number of virtual processes')
 ax2.set_ylabel(r'relative $T_{\mathrm{wall}}$ [%]')
 B.merge_legends(ax1, ax2)
 
+# Save figure
 plt.savefig('scaling.pdf')
