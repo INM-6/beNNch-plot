@@ -221,7 +221,7 @@ class BenchPlot():
         log : bool, default
             whether the x-axes should have logarithmic scale
         alpha, int, default
-            alpha value used for blending
+            alpha value of fill_between plot
         error : bool
             whether plot should have error bars
         """
@@ -271,7 +271,7 @@ class BenchPlot():
             list with plotting quantities
         axis : axis object
             axis object used when plotting
-        log : list with bools, default
+        log : tuple of bools, default
             whether x and y axis should have logarithmic scale
         error : bool, default
             whether or not to plot error bars
@@ -310,14 +310,14 @@ class BenchPlot():
 
     def merge_legends(self, ax1, ax2):
         """
-        Merge legends from two axes.
+        Merge legends from two axes, display them in the first
 
         Attributes
         ----------
         ax1 : axes object
-            first axes
+            first axis
         ax2 : axes object
-            second axes
+            second axis
         """
         handles, labels = [(a + b) for a, b in zip(
             ax2.get_legend_handles_labels(),
@@ -326,7 +326,7 @@ class BenchPlot():
 
     def simple_axis(self, ax):
         """
-        Only have ticks on the left and bottom spines.
+        Remove top and right spines.
 
         Attributes
         ----------
