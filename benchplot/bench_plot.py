@@ -1,3 +1,7 @@
+"""
+Class for benchmarking plots
+"""
+
 import pandas as pd
 import matplotlib
 from matplotlib import pyplot as plt
@@ -12,21 +16,28 @@ except ImportError:
 
 
 class BenchPlot():
-    '''
-    Class organizing benchmarking plots
+    """
+    Class organizing benchmarking plots.
 
     Attributes
     ----------
     x_axis : str or list
         variable to be plotted on x-axis
+    x_ticks : str, optional
 
-    matplotlib_params : dict
+    data_file : str, optional
+        path to data
+    matplotlib_params : dict, optional
         parameters passed to matplotlib
-    color_params : dict
+    color_params : dict, optional
         unique colors for variables
-    additional_params : dict
+    additional_params : dict, optional
         additional parameters used for plotting
-   '''
+    label_params : dict, optional
+        labels used when plotting
+    time_scaling : int, optional
+        scaling parameter for simulation time
+   """
 
     def __init__(self, x_axis,
                  x_ticks='data',
@@ -36,9 +47,6 @@ class BenchPlot():
                  additional_params=pp.additional_params,
                  label_params=pp.label_params,
                  time_scaling=1):
-        '''
-        Initialize attributes. Use attributes to set up figure.
-        '''
 
         self.x_axis = x_axis
         self.x_ticks = x_ticks
@@ -52,6 +60,20 @@ class BenchPlot():
         self.compute_derived_quantities()
 
     def load_data(self, data_file):
+        """
+        Load data to dataframe, to be used later when plotting.
+
+        Group the data by specified operations.
+
+        Attributes
+        ----------
+        data_file : str
+            data file to be loaded and later plotted
+
+        Raises
+        ------
+        ValueError
+        """
         try:
             self.df = pd.read_csv(data_file, delimiter=',')
         except FileNotFoundError:
@@ -116,6 +138,7 @@ class BenchPlot():
                'total_memory', 'total_memory_std',
                'num_connections', 'num_connections_std',
                'local_spike_counter', 'local_spike_counter_std']
+
         self.df = self.df.drop('rng_seed', axis=1).groupby(
             ['num_nodes',
              'threads_per_task',
@@ -124,6 +147,10 @@ class BenchPlot():
         self.df.columns = col
 
     def compute_derived_quantities(self):
+        """
+        Do computations to get parameters needed for plotting.
+        """
+
         self.df['num_nvp'] = (
             self.df['threads_per_task'] * self.df['tasks_per_node']
         )
@@ -180,11 +207,25 @@ class BenchPlot():
     def plot_fractions(self, axis, fill_variables,
                        interpolate=False, step=None, log=False, alpha=1.,
                        error=False):
-        '''
+        """
+        Fill area between curves.
+
+        axis : Matplotlib axes object
         fill_variables : list
             variables (e.g. timers) to be plotted as fill  between graph and
             x axis
-        '''
+        interpolate : bool, default
+            whether to interpolate between the curves
+        step : {'pre', 'post', 'mid'}, optional
+            should the filling be a step function
+        log : bool, default
+            whether the x-axes should have logarithmic scale
+        alpha, int, default
+            alpha value of fill_between plot
+        error : bool
+            whether plot should have error bars
+        """
+
         fill_height = 0
         for fill in fill_variables:
             axis.fill_between(np.squeeze(self.df[self.x_axis]),
@@ -221,6 +262,21 @@ class BenchPlot():
 
     def plot_main(self, quantities, axis, log=(False, False),
                   error=False, fmt='none'):
+        """
+        Main plotting function.
+
+        Attributes
+        ----------
+        quantities : list
+            list with plotting quantities
+        axis : axis object
+            axis object used when plotting
+        log : tuple of bools, default
+            whether x and y axis should have logarithmic scale
+        error : bool, default
+            whether or not to plot error bars
+        """
+
         for y in quantities:
             if not error:
                 axis.plot(self.df[self.x_axis],
@@ -253,13 +309,30 @@ class BenchPlot():
             axis.set_yscale('log')
 
     def merge_legends(self, ax1, ax2):
+        """
+        Merge legends from two axes, display them in the first
+
+        Attributes
+        ----------
+        ax1 : axes object
+            first axis
+        ax2 : axes object
+            second axis
+        """
         handles, labels = [(a + b) for a, b in zip(
             ax2.get_legend_handles_labels(),
             ax1.get_legend_handles_labels())]
         ax1.legend(handles, labels, loc='upper right')
-        # ax1.set_xticklabels('')
 
     def simple_axis(self, ax):
+        """
+        Remove top and right spines.
+
+        Attributes
+        ----------
+        ax : axes object
+            axes object for which to adjust spines
+        """
         # Hide the right and top spines
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
