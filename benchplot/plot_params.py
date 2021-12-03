@@ -1,7 +1,23 @@
 """
-Default parameters for plotting
+benchplot - standardized plotting routines for performance benchmarks.
+Copyright (C) 2021 Forschungszentrum Juelich GmbH, INM-6
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with
+this program. If not, see <https://www.gnu.org/licenses/>.
+
+SPDX-License-Identifier: GPL-3.0-or-later
 """
 
+"""
+Default parameters for plotting
+"""
 import tol_colors
 
 size_factor = 1.3
@@ -10,18 +26,18 @@ matplotlib_params = {
     'image.origin': 'lower',
     'image.interpolation': 'nearest',
     'axes.grid': False,
-    'axes.labelsize': 15*size_factor,
-    'axes.titlesize': 19*size_factor,
-    'font.size': 16*size_factor,
-    'legend.fontsize': 11*size_factor,
-    'xtick.labelsize': 11*size_factor,
-    'ytick.labelsize': 11*size_factor,
+    'axes.labelsize': 15 * size_factor,
+    'axes.titlesize': 19 * size_factor,
+    'font.size': 16 * size_factor,
+    'legend.fontsize': 11 * size_factor,
+    'xtick.labelsize': 11 * size_factor,
+    'ytick.labelsize': 11 * size_factor,
     'text.usetex': False,
 }
 
 additional_params = {
     'figsize_single': [6.1 * 1.5, 6.1],
-    'figsize_double': [12.2, 6.1*1.1]
+    'figsize_double': [12.2, 6.1 * 1.1]
 }
 
 bright = tol_colors.tol_cset('bright')
