@@ -261,7 +261,7 @@ class BenchPlot():
                 matplotlib.ticker.ScalarFormatter())
 
     def plot_main(self, quantities, axis, log=(False, False),
-                  error=False):
+                  error=False, fmt='none'):
         """
         Main plotting function.
 
@@ -275,6 +275,8 @@ class BenchPlot():
             whether x and y axis should have logarithmic scale
         error : bool, default
             whether or not to plot error bars
+        fmt : string
+            matplotlib format string (fmt) for defining line style
         """
 
         for y in quantities:
@@ -295,7 +297,7 @@ class BenchPlot():
                     capthick=1,
                     label=self.label_params[y],
                     color=self.color_params[y],
-                    fmt='none')
+                    fmt=fmt)
 
         if self.x_ticks == 'data':
             axis.set_xticks(self.df[self.x_axis].values)
