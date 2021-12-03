@@ -24,5 +24,5 @@ setup(
     ],
     packages=["benchplot"],
     include_package_data=True,
-    install_requires=["pandas", "matplotlib", "pyyaml"],
+    install_requires=open("requirements.txt", 'r', encoding="utf8").readlines(),
 )
