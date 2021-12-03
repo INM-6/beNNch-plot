@@ -1,6 +1,6 @@
 # benchplot
 
-This package provides standardized plotting routines. It is part of the [NEST Benchmarking Framework](https://github.com/INM-6/nest_benchmarking_framework), however, it can also be used in a stand alone fashion.
+This package provides standardized plotting routines. It is part of the [NEST Benchmarking Framework](https://github.com/INM-6/nest_benchmarking_framework), however, it can also be used in a standalone fashion.
 
 It is designed to work with performance benchmarking results stored in `.csv` files that adhere to a common naming convention.
 
@@ -37,4 +37,4 @@ The microcircuit serves as an example of a benchmark model that can be run acros
 
 #### multi-area-model
 
-In contrast to the microcircuit, the multi-area model showcases benchmarks across multiple number of nodes. While the basics are the same as for the microcircuit, an additional panel is created for showing the network construction time together with the state propagation time. Additionally, `multi-area-model_ram.py` gives a minimal example of how to plot other measurements that times.
+In contrast to the microcircuit, the multi-area model showcases benchmarks across multiple number of nodes. While the basics are the same as for the microcircuit, an additional panel is created for showing the network construction time together with the state propagation time. Additionally, `multi-area-model_ram.py` gives a minimal example of how to plot other measurements than times.
