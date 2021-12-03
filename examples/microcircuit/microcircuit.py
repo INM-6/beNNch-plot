@@ -1,83 +1,57 @@
+import numpy as np
 import benchplot as bp
-import tol_colors
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 
 
-vibrant = tol_colors.tol_cset('vibrant')
+"""
+define what to plot:
+- data_file:
+    Path to .csv file containing benchmarking measurements.
+- x_axis:
+    Giving a list of strings corresponding to the main scaling
+    variable, typically 'num_nodes' or 'num_nvp'.
+- time_scaling:
+    Quotient between unit time of timing measurement and
+    simulation. Usually, the former is given in s while
+    the latter is given in ms. 
+"""
+args = {
+    'data_file': '8d196bc5-b5f5-448b-8571-bf695ed64d4a.csv',
+    'x_axis': ['num_nvp'],
+    'time_scaling': 1e3
+}
 
-hashes = ['0a6f610e-824d-11eb-8289-57dd6a14c4b8',
-          '700c9db6-824c-11eb-adb7-67ae217a4502',
-          'ef8839ce-824c-11eb-aa99-4bdf3bfd375d',
-          '01e23ea8-824d-11eb-83c5-8f9f7c8aec93']
-
-label_params_y = [{'sim_factor' : '1 MPI Process, 128 Threads p. Process',
-                   'max_memory' : '1 MPI Process, 128 Threads p. Process'},
-                  {'sim_factor' : '2 MPI Processes, 64 Threads p. Process',
-                   'max_memory' : '2 MPI Processes, 64 Threads p. Process'},
-                  {'sim_factor' : '4 MPI Processes, 32 Threads p. Process',
-                   'max_memory' : '4 MPI Processes, 32 Threads p. Process'},
-                  {'sim_factor' : '8 MPI Processes, 16 Threads p. Process',
-                   'max_memory' : '8 MPI Processes, 16 Threads p. Process'}]
-
-color_params = [{'sim_factor' : vibrant.orange,
-                 'max_memory' : vibrant.orange},
-                {'sim_factor' : vibrant.blue,
-                 'max_memory' : vibrant.blue},
-                {'sim_factor' : vibrant.cyan,
-                 'max_memory' : vibrant.cyan},
-                {'sim_factor' : vibrant.magenta,
-                 'max_memory' : vibrant.magenta}]
-
-arg_template = {'data_path' : './results_microcircuit_jusuf',
-                'catalogue_path' : 'catalogue_microcircuit_jusuf.yaml',
-                'save_path' : './',
-                'manually_set_plot_name' : 'Microcircuit Comparison',
-                'hlines' : [[1],[]],
-                'hline_colors' : ['red'],
-                'x_axis' : ['num_nodes'],
-                'y_axis' : [['sim_factor'], ['max_memory']],
-                'x_label' : ['Nodes'],
-                'y_label' : [r'real-time factor $T_{\mathrm{wall}}/$'
-                             '$T_{\mathrm{model}}$', 'Memory'],
-                'fill_variables' : [],
-                'time_scaling' : 1e3
-               }
-
-# Generate argument dicts
-args = []
-for i, data_hash in enumerate(hashes):
-    arg = arg_template.copy()
-    arg['data_hash'] = data_hash
-    arg['label_params'] = label_params_y[i]
-    arg['color_params'] = color_params[i]
-
-    args.append(arg)
-
-
-# Instantiate objectes
-benchplots = []
-for arg in args:
-    B = bp.BenchPlot(**arg)
-    benchplots.append(B)
+# Figure layout
+B = bp.BenchPlot(**args)
 
 # Plotting
-fig = plt.figure(figsize= (12, 6), constrained_layout=True)
-spec = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
+widths = [1]
+heights = [3, 1]
+fig = plt.figure(figsize=(6, 6), constrained_layout=True)
+spec = gridspec.GridSpec(ncols=1, nrows=2, figure=fig, width_ratios=widths,
+                         height_ratios=heights)
 
-ax1 = fig.add_subplot(spec[0, 0])
-ax2 = fig.add_subplot(spec[0, 1])
+ax1 = fig.add_subplot(spec[0, :])
+ax2 = fig.add_subplot(spec[1, :])
 
+# Add plots
+B.plot_main(quantities=['sim_factor'], axis=ax1, log=(False, True))
+B.plot_fractions(axis=ax2,
+                 fill_variables=[
+                     'frac_phase_communicate',
+                     'frac_phase_update',
+                     'frac_phase_deliver',
+                     'frac_phase_collocate'
+                 ],
+                 )
 
-for B in benchplots:
-    B.plot_main(axis=ax1, plot_column=0)
-    B.plot_main(axis=ax2, plot_column=1)
+# Set labels, limits etc.
+ax1.set_ylabel(r'$T_{\mathrm{wall}}$ [s] for $T_{\mathrm{model}} =$'
+               + f'{np.unique(B.df.model_time_sim.values)[0]} s')
+ax1.set_xlabel('Number of virtual processes')
+ax2.set_ylabel(r'relative $T_{\mathrm{wall}}$ [%]')
+B.merge_legends(ax1, ax2)
 
-ax1.set_xlabel('Number of Nodes')
-ax2.set_xlabel('Number of Nodes')
-
-ax1.legend()
-ax2.legend()
-
-plt.savefig('microcircuit_jusuf_scaling.pdf')
-
+# Save figure
+plt.savefig('scaling.pdf')

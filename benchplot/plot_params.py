@@ -1,3 +1,7 @@
+"""
+Default parameters for plotting
+"""
+
 import tol_colors
 
 size_factor = 1.3
@@ -12,8 +16,6 @@ matplotlib_params = {
     'legend.fontsize': 11*size_factor,
     'xtick.labelsize': 11*size_factor,
     'ytick.labelsize': 11*size_factor,
-    # 'font.family': 'sans-serif',
-    # 'font.sans-serif': 'Avenir',
     'text.usetex': False,
 }
 
@@ -77,5 +79,4 @@ label_params = {
     'phase_total_factor': 'All phases',
     'total_memory': 'Memory',
     'total_memory_per_node': 'Memory per node',
-
 }
