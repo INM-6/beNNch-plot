@@ -275,6 +275,8 @@ class BenchPlot():
             whether x and y axis should have logarithmic scale
         error : bool, default
             whether or not to plot error bars
+        fmt : string
+            matplotlib format string (fmt) for defining line style
         """
 
         for y in quantities:
