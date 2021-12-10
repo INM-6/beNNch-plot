@@ -31,7 +31,7 @@ except ImportError:
     import plot_params as pp
 
 
-class BenchPlot():
+class Plot():
     """
     Class organizing benchmarking plots.
 
