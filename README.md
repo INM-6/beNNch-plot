@@ -37,7 +37,7 @@ Alternatively, if you want to make changes on the fly (e.g. change plotting para
 pip install -e .
 ```
 
-Both commands install `beNNch-plot` as package such that it can be used anywhere on your system via `import beNNchplot` (no hyphen!).
+Both commands install `beNNch-plot` as package such that it can be used anywhere on your system via `import bennchplot`.
 
 ## Using `beNNch-plot`
 

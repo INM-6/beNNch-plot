@@ -19,4 +19,4 @@ SPDX-License-Identifier: GPL-3.0-or-later
 # Version of the benchplot package
 __version__ = "0.1"
 
-from .beNNchplot import Plot
+from .bennchplot import Plot

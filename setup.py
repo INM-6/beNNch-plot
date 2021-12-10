@@ -25,7 +25,7 @@ README = (HERE / "README.md").read_text()
 
 # This call to setup() does all the work
 setup(
-    name="beNNchplot",
+    name="bennchplot",
     version="0.1",
     description="Plotting benchmark results",
     long_description=README,
@@ -38,7 +38,7 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Programming Language :: Python :: 3",
     ],
-    packages=["beNNchplot"],
+    packages=["bennchplot"],
     include_package_data=True,
     install_requires=["pandas", "matplotlib", "pyyaml"],
 )
