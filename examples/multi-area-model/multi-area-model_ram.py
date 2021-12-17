@@ -1,5 +1,5 @@
 """
-benchplot - standardized plotting routines for performance benchmarks.
+beNNch-plot - standardized plotting routines for performance benchmarks.
 Copyright (C) 2021 Forschungszentrum Juelich GmbH, INM-6
 
 This program is free software: you can redistribute it and/or modify it under
@@ -14,7 +14,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 """
-import benchplot as bp
+import bennchplot as bp
 from matplotlib import pyplot as plt
 
 
@@ -37,7 +37,7 @@ args = {
 }
 
 # Instantiate class
-B = bp.BenchPlot(**args)
+B = bp.Plot(**args)
 
 # Figure layout
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(12, 6))

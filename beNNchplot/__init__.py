@@ -1,5 +1,5 @@
 """
-benchplot - standardized plotting routines for performance benchmarks.
+beNNch-plot - standardized plotting routines for performance benchmarks.
 Copyright (C) 2021 Forschungszentrum Juelich GmbH, INM-6
 
 This program is free software: you can redistribute it and/or modify it under
@@ -19,4 +19,4 @@ SPDX-License-Identifier: GPL-3.0-or-later
 # Version of the benchplot package
 __version__ = "0.1"
 
-from .bench_plot import BenchPlot
+from .bennchplot import Plot

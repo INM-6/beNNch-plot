@@ -1,5 +1,5 @@
 <!--
-benchplot - standardized plotting routines for performance benchmarks.
+beNNch-plot - standardized plotting routines for performance benchmarks.
 Copyright (C) 2021 Forschungszentrum Juelich GmbH, INM-6
 
 This program is free software: you can redistribute it and/or modify it under
@@ -15,9 +15,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-# benchplot
+# beNNch-plot
 
-This package provides standardized plotting routines. It is part of the [NEST Benchmarking Framework](https://github.com/INM-6/nest_benchmarking_framework), however, it can also be used in a standalone fashion.
+This package provides standardized plotting routines. It is part of [beNNch](https://github.com/INM-6/beNNch), however, it can also be used in a standalone fashion.
 
 It is designed to work with performance benchmarking results stored in `.csv` files that adhere to a common naming convention.
 
@@ -37,20 +37,20 @@ Alternatively, if you want to make changes on the fly (e.g. change plotting para
 pip install -e .
 ```
 
-Both commands install `benchplot` as package such that it can be used anywhere on your system.
+Both commands install `beNNch-plot` as package such that it can be used anywhere on your system via `import bennchplot`.
 
-## Using `benchplot`
+## Using `beNNch-plot`
 
-Conceptually, `benchplot` adheres to a modular design philosophy. This means that arrangement of the created figure is not done internally but defineable on the surface level by the user. Concretely, this means that the user can provide their own `axis` objects, thereby retaining customization options such as setting titles and labels.
-For measures that are used by default in the [NEST Benchmarking Framework](https://github.com/INM-6/nest_benchmarking_framework), default colors and labels are provided. This can be extended if desired.
+Conceptually, `beNNch-plot` adheres to a modular design philosophy. This means that arrangement of the created figure is not done internally but defineable on the surface level by the user. Concretely, this means that the user can provide their own `axis` objects, thereby retaining customization options such as setting titles and labels.
+For measures that are used by default in [beNNch](https://github.com/INM-6/beNNch), default colors and labels are provided. This can be extended if desired.
 
 ### Examples
 
-Examples of how to use `benchplot` are provided in [`./examples`](https://github.com/INM-6/benchplot/tree/main/examples). Here you can find examples for two models, the `microcircuit` and the `multi-area-model`. The necessary underlying performance results are given alongside.
+Examples of how to use `beNNch-plot` are provided in [`./examples`](./examples/). Here you can find examples for two models, the `microcircuit` and the `multi-area-model`. The necessary underlying performance results are given alongside.
 
 #### microcircuit
 
-The microcircuit serves as an example of a benchmark model that can be run across different numbers of virtual processes on a single node. After defining custom `axes`, `microcircuit.py` calls the two main plotting functions of `benchplot`: `plot_main` for plotting simple line or error plots as `plot_fractions` to create a `fill_between`-style plot.
+The microcircuit serves as an example of a benchmark model that can be run across different numbers of virtual processes on a single node. After defining custom `axes`, `microcircuit.py` calls the two main plotting functions of `beNNch-plot`: `plot_main` for plotting simple line or error plots as `plot_fractions` to create a `fill_between`-style plot.
 
 #### multi-area-model
 
