@@ -244,9 +244,9 @@ class Plot():
 
         fill_height = 0
         for fill in fill_variables:
-            axis.fill_between(np.squeeze(self.df[self.x_axis]),
+            axis.fill_between(np.squeeze(self.df[self.x_axis].to_numpy(), axis=1),
                               fill_height,
-                              np.squeeze(self.df[fill]) + fill_height,
+                              self.df[fill].to_numpy() + fill_height,
                               label=self.label_params[fill],
                               facecolor=self.color_params[fill],
                               interpolate=interpolate,
@@ -255,18 +255,17 @@ class Plot():
                               linewidth=0.5,
                               edgecolor='#444444')
             if error:
-                axis.errorbar(np.squeeze(self.df[self.x_axis]),
-                              np.squeeze(self.df[fill]) + fill_height,
-                              yerr=np.squeeze(self.df[fill + '_std']),
+                axis.errorbar(np.squeeze(self.df[self.x_axis].to_numpy(), axis=1),
+                              self.df[fill].to_numpy() + fill_height,
+                              yerr=self.df[fill + '_std'].to_numpy(),
                               capsize=3,
                               capthick=1,
                               color='k',
-                              fmt='none'
-                              )
+                              fmt='none')
             fill_height += self.df[fill].to_numpy()
 
         if self.x_ticks == 'data':
-            axis.set_xticks(np.squeeze(self.df[self.x_axis]))
+            axis.set_xticks(np.squeeze(self.df[self.x_axis].to_numpy(), axis=1))
         else:
             axis.set_xticks(self.x_ticks)
 
