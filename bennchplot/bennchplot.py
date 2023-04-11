@@ -244,7 +244,7 @@ class Plot():
 
         fill_height = 0
         for fill in fill_variables:
-            axis.fill_between(np.squeeze(self.df[self.x_axis].to_numpy(), axis=1),
+            axis.fill_between(self.df[self.x_axis].to_numpy().squeeze(axis=1),
                               fill_height,
                               self.df[fill].to_numpy() + fill_height,
                               label=self.label_params[fill],
@@ -255,7 +255,7 @@ class Plot():
                               linewidth=0.5,
                               edgecolor='#444444')
             if error:
-                axis.errorbar(np.squeeze(self.df[self.x_axis].to_numpy(), axis=1),
+                axis.errorbar(self.df[self.x_axis].to_numpy().squeeze(axis=1),
                               self.df[fill].to_numpy() + fill_height,
                               yerr=self.df[fill + '_std'].to_numpy(),
                               capsize=3,
@@ -265,7 +265,7 @@ class Plot():
             fill_height += self.df[fill].to_numpy()
 
         if self.x_ticks == 'data':
-            axis.set_xticks(np.squeeze(self.df[self.x_axis].to_numpy(), axis=1))
+            axis.set_xticks(self.df[self.x_axis].to_numpy().squeeze(axis=1))
         else:
             axis.set_xticks(self.x_ticks)
 
@@ -296,17 +296,17 @@ class Plot():
 
         for y in quantities:
             if not error:
-                axis.plot(self.df[self.x_axis],
-                          self.df[y],
+                axis.plot(self.df[self.x_axis].to_numpy(),
+                          self.df[y].to_numpy(),
                           marker=None,
                           label=self.label_params[y],
                           color=self.color_params[y],
                           linewidth=2)
             else:
                 axis.errorbar(
-                    self.df[self.x_axis].values,
-                    self.df[y].values,
-                    yerr=self.df[y + '_std'].values,
+                    self.df[self.x_axis].to_numpy(),
+                    self.df[y].to_numpy(),
+                    yerr=self.df[y + '_std'].to_numpy(),
                     marker=None,
                     capsize=3,
                     capthick=1,
@@ -315,7 +315,7 @@ class Plot():
                     fmt=fmt)
 
         if self.x_ticks == 'data':
-            axis.set_xticks(self.df[self.x_axis].values)
+            axis.set_xticks(self.df[self.x_axis].to_numpy())
         else:
             axis.set_xticks(self.x_ticks)
 
