@@ -296,7 +296,7 @@ class Plot():
 
         for y in quantities:
             if not error:
-                axis.plot(self.df[self.x_axis].to_numpy(),
+                axis.plot(self.df[self.x_axis].to_numpy().squeeze(axis=1),
                           self.df[y].to_numpy(),
                           marker=None,
                           label=self.label_params[y],
@@ -304,7 +304,7 @@ class Plot():
                           linewidth=2)
             else:
                 axis.errorbar(
-                    self.df[self.x_axis].to_numpy(),
+                    self.df[self.x_axis].to_numpy().squeeze(axis=1),
                     self.df[y].to_numpy(),
                     yerr=self.df[y + '_std'].to_numpy(),
                     marker=None,
@@ -315,7 +315,7 @@ class Plot():
                     fmt=fmt)
 
         if self.x_ticks == 'data':
-            axis.set_xticks(self.df[self.x_axis].to_numpy())
+            axis.set_xticks(self.df[self.x_axis].to_numpy().squeeze(axis=1))
         else:
             axis.set_xticks(self.x_ticks)
 
