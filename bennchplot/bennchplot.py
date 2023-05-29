@@ -62,7 +62,8 @@ class Plot():
                  color_params=pp.color_params,
                  additional_params=pp.additional_params,
                  label_params=pp.label_params,
-                 time_scaling=1):
+                 time_scaling=1,
+                 df=None):
 
         self.x_axis = x_axis
         self.x_ticks = x_ticks
@@ -71,7 +72,8 @@ class Plot():
         self.color_params = color_params
         self.label_params = label_params
         self.time_scaling = time_scaling
-
+        
+        self.df = df
         self.load_data(data_file)
         self.compute_derived_quantities()
 
@@ -90,11 +92,12 @@ class Plot():
         ------
         ValueError
         """
-        try:
-            self.df = pd.read_csv(data_file, delimiter=',')
-        except FileNotFoundError:
-            print('File could not be found')
-            quit()
+        if self.df is None:
+            try:
+                self.df = pd.read_csv(data_file, delimiter=',')
+            except FileNotFoundError:
+                print('File could not be found')
+                quit()
 
         for py_timer in ['py_time_create', 'py_time_connect']:
             if py_timer not in self.df:
