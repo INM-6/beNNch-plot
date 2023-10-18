@@ -62,7 +62,8 @@ class Plot():
                  color_params=pp.color_params,
                  additional_params=pp.additional_params,
                  label_params=pp.label_params,
-                 time_scaling=1):
+                 time_scaling=1,
+                 detailed_timers=True):
 
         self.x_axis = x_axis
         self.x_ticks = x_ticks
@@ -71,6 +72,7 @@ class Plot():
         self.color_params = color_params
         self.label_params = label_params
         self.time_scaling = time_scaling
+        self.detailed_timers = detailed_timers
 
         self.load_data(data_file)
         self.compute_derived_quantities()
@@ -107,17 +109,10 @@ class Plot():
                  'threads_per_task': 'first',
                  'tasks_per_node': 'first',
                  'model_time_sim': 'first',
-                 'wall_time_create': ['mean', 'std'],
-                 'wall_time_connect': ['mean', 'std'],
-                 'wall_time_sim': ['mean', 'std'],
-                 'wall_time_phase_collocate': ['mean', 'std'],
-                 'wall_time_phase_communicate': ['mean', 'std'],
-                 'wall_time_phase_deliver': ['mean', 'std'],
-                 'wall_time_phase_update': ['mean', 'std'],
-                 'wall_time_communicate_target_data': ['mean', 'std'],
-                 'wall_time_gather_spike_data': ['mean', 'std'],
-                 'wall_time_gather_target_data': ['mean', 'std'],
-                 'wall_time_communicate_prepare': ['mean', 'std'],
+                 'time_construction_create': ['mean', 'std'],
+                 'time_construction_connect': ['mean', 'std'],
+                 'time_simulate': ['mean', 'std'],
+                 'time_communicate_prepare': ['mean', 'std'],
                  'py_time_create': ['mean', 'std'],
                  'py_time_connect': ['mean', 'std'],
                  'base_memory': ['mean', 'std'],
@@ -126,29 +121,55 @@ class Plot():
                  'total_memory': ['mean', 'std'],
                  'num_connections': ['mean', 'std'],
                  'local_spike_counter': ['mean', 'std'],
-
                  }
 
         col = ['num_nodes', 'threads_per_task', 'tasks_per_node',
-               'model_time_sim', 'wall_time_create',
-               'wall_time_create_std', 'wall_time_connect',
-               'wall_time_connect_std', 'wall_time_sim',
-               'wall_time_sim_std', 'wall_time_phase_collocate',
-               'wall_time_phase_collocate_std', 'wall_time_phase_communicate',
-               'wall_time_phase_communicate_std', 'wall_time_phase_deliver',
-               'wall_time_phase_deliver_std', 'wall_time_phase_update',
-               'wall_time_phase_update_std',
-               'wall_time_communicate_target_data',
-               'wall_time_communicate_target_data_std',
-               'wall_time_gather_spike_data',
-               'wall_time_gather_spike_data_std',
-               'wall_time_gather_target_data',
-               'wall_time_gather_target_data_std',
-               'wall_time_communicate_prepare',
-               'wall_time_communicate_prepare_std',
+               'model_time_sim', 'time_construction_create',
+               'time_construction_create_std', 'time_construction_connect',
+               'time_construction_connect_std', 'time_simulate',
+               'time_simulate_std',
+               'time_communicate_prepare',
+               'time_communicate_prepare_std',
                'py_time_create', 'py_time_create_std',
                'py_time_connect', 'py_time_connect_std',
                'base_memory', 'base_memory_std',
+               'network_memory', 'network_memory_std',
+               'init_memory', 'init_memory_std',
+               'total_memory', 'total_memory_std',
+               'num_connections', 'num_connections_std',
+               'local_spike_counter', 'local_spike_counter_std']
+
+        if self.detailed_timers:
+            dict_.update({
+                'time_collocate_spike_data': ['mean', 'std'],
+                'time_communicate_spike_data': ['mean', 'std'],
+                'time_deliver_spike_data': ['mean', 'std'],
+                # 'time_update_spike_data': ['mean', 'std'],
+                'time_communicate_target_data': ['mean', 'std'],
+                'time_gather_spike_data': ['mean', 'std'],
+                'time_gather_target_data': ['mean', 'std']})
+
+            col = ['num_nodes', 'threads_per_task', 'tasks_per_node',
+                   'model_time_sim', 'time_construction_create',
+                   'time_construction_create_std', 'time_construction_connect',
+                   'time_construction_connect_std', 'time_simulate',
+                   'time_simulate_std', 'time_collocate_spike_data',
+                   'time_collocate_spike_data_std', 'time_communicate_spike_data',
+                   'time_communicate_spike_data_std', 'time_deliver_spike_data',
+                   'time_deliver_spike_data_std',
+                   # 'time_update_spike_data',
+                   # 'time_update_spike_data_std',
+                   'time_communicate_target_data',
+                   'time_communicate_target_data_std',
+                   'time_gather_spike_data',
+                   'time_gather_spike_data_std',
+                   'time_gather_target_data',
+                   'time_gather_target_data_std',
+                   'time_communicate_prepare',
+                   'time_communicate_prepare_std',
+                   'py_time_create', 'py_time_create_std',
+                   'py_time_connect', 'py_time_connect_std',
+                   'base_memory', 'base_memory_std',
                'network_memory', 'network_memory_std',
                'init_memory', 'init_memory_std',
                'total_memory', 'total_memory_std',
@@ -160,7 +181,6 @@ class Plot():
              'threads_per_task',
              'tasks_per_node',
              'model_time_sim'], as_index=False).agg(dict_)
-        self.df.columns = col
 
     def compute_derived_quantities(self):
         """
@@ -171,54 +191,56 @@ class Plot():
             self.df['threads_per_task'] * self.df['tasks_per_node']
         )
         self.df['model_time_sim'] /= self.time_scaling
-        self.df['wall_time_create+wall_time_connect'] = (
-            self.df['py_time_create'] + self.df['py_time_connect'])
-        self.df['wall_time_create+wall_time_connect_std'] = (
-            np.sqrt((self.df['wall_time_create_std']**2 +
-                     self.df['wall_time_connect_std']**2)))
-        self.df['sim_factor'] = (self.df['wall_time_sim'] /
-                                 self.df['model_time_sim'])
-        self.df['sim_factor_std'] = (self.df['wall_time_sim_std'] /
-                                     self.df['model_time_sim'])
-        self.df['wall_time_phase_total'] = (
-            self.df['wall_time_phase_update'] +
-            self.df['wall_time_phase_communicate'] +
-            self.df['wall_time_phase_deliver'] +
-            self.df['wall_time_phase_collocate'])
-        self.df['wall_time_phase_total_std'] = \
-            np.sqrt(
-            self.df['wall_time_phase_update_std']**2 +
-            self.df['wall_time_phase_communicate_std']**2 +
-            self.df['wall_time_phase_deliver_std']**2 +
-            self.df['wall_time_phase_collocate_std']**2
-        )
-        self.df['phase_total_factor'] = (
-            self.df['wall_time_phase_total'] /
-            self.df['model_time_sim'])
-        self.df['phase_total_factor_std'] = (
-            self.df['wall_time_phase_total_std'] /
-            self.df['model_time_sim'])
+        self.df['sim_factor'] = (self.df['time_simulate']['mean'].values /
+                                 self.df['model_time_sim'].values.flatten())
+        self.df['sim_factor_std'] = (self.df['time_simulate']['std'].values /
+                                     self.df['model_time_sim'].values.flatten())
+        if self.detailed_timers:
+            self.df['time_construction_create+time_construction_connect'] = (
+                self.df['py_time_create'] + self.df['py_time_connect'])
+            self.df['time_construction_create+time_construction_connect_std'] = (
+                np.sqrt((self.df['time_construction_create_std']**2 +
+                         self.df['time_construction_connect_std']**2)))
 
-        for phase in ['update', 'communicate', 'deliver', 'collocate']:
-            self.df['phase_' + phase + '_factor'] = (
-                self.df['wall_time_phase_' + phase] /
+            self.df['time_phase_total'] = (
+                # self.df['time_update_spike_data'] +
+                self.df['time_communicate_spike_data'] +
+                self.df['time_deliver_spike_data'] +
+                self.df['time_collocate_spike_data'])
+            self.df['time_phase_total_std'] = \
+                np.sqrt(
+                # self.df['time_update_spike_data_std']**2 +
+                self.df['time_communicate_spike_data_std']**2 +
+                self.df['time_deliver_spike_data_std']**2 +
+                self.df['time_collocate_spike_data_std']**2
+            )
+            self.df['phase_total_factor'] = (
+                self.df['time_phase_total'] /
+                self.df['model_time_sim'])
+            self.df['phase_total_factor_std'] = (
+                self.df['time_phase_total_std'] /
                 self.df['model_time_sim'])
 
-            self.df['phase_' + phase + '_factor' + '_std'] = (
-                self.df['wall_time_phase_' + phase + '_std'] /
-                self.df['model_time_sim'])
+            for phase in ['update', 'communicate', 'deliver', 'collocate']:
+                self.df['phase_' + phase + '_factor'] = (
+                    self.df['time_' + phase + '_spike_data'] /
+                    self.df['model_time_sim'])
 
-            self.df['frac_phase_' + phase] = (
-                100 * self.df['wall_time_phase_' + phase] /
-                self.df['wall_time_phase_total'])
+                self.df['phase_' + phase + '_factor' + '_std'] = (
+                    self.df['time_' + phase + '_spike_data' + '_std'] /
+                    self.df['model_time_sim'])
 
-            self.df['frac_phase_' + phase + '_std'] = (
-                100 * self.df['wall_time_phase_' + phase + '_std'] /
-                self.df['wall_time_phase_total'])
-        self.df['total_memory_per_node'] = (self.df['total_memory'] /
-                                            self.df['num_nodes'])
-        self.df['total_memory_per_node_std'] = (self.df['total_memory_std'] /
-                                                self.df['num_nodes'])
+                self.df['frac_phase_' + phase] = (
+                    100 * self.df['time_' + phase + '_spike_data'] /
+                    self.df['time_phase_total'])
+
+                self.df['frac_phase_' + phase + '_std'] = (
+                    100 * self.df['time_' + phase + '_spike_data' + '_std'] /
+                    self.df['time_phase_total'])
+        self.df['total_memory_per_node'] = (self.df['total_memory']['mean'].values /
+                                            self.df['num_nodes'].values.flatten())
+        self.df['total_memory_per_node_std'] = (self.df['total_memory']['std'].values /
+                                                self.df['num_nodes'].values.flatten())
 
     def plot_fractions(self, axis, fill_variables,
                        interpolate=False, step=None, log=False, alpha=1.,
@@ -277,7 +299,7 @@ class Plot():
                 matplotlib.ticker.ScalarFormatter())
 
     def plot_main(self, quantities, axis, log=(False, False),
-                  error=False, fmt='none'):
+                  error=False, fmt='none', label=None, color=None):
         """
         Main plotting function.
 
@@ -296,14 +318,15 @@ class Plot():
         """
 
         for y in quantities:
-            if not error:
-                axis.plot(self.df[self.x_axis],
-                          self.df[y],
-                          marker=None,
-                          label=self.label_params[y],
-                          color=self.color_params[y],
-                          linewidth=2)
-            else:
+            label = self.label_params[y] if label is None else label
+            color = self.color_params[y] if color is None else color
+            axis.plot(self.df[self.x_axis],
+                      self.df[y],
+                      marker=None,
+                      label=label,
+                      color=color,
+                      linewidth=2)
+            if error:
                 axis.errorbar(
                     self.df[self.x_axis].values,
                     self.df[y].values,
@@ -311,8 +334,7 @@ class Plot():
                     marker=None,
                     capsize=3,
                     capthick=1,
-                    label=self.label_params[y],
-                    color=self.color_params[y],
+                    color=color,
                     fmt=fmt)
 
         if self.x_ticks == 'data':
