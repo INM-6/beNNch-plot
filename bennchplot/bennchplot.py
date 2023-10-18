@@ -170,11 +170,11 @@ class Plot():
                    'py_time_create', 'py_time_create_std',
                    'py_time_connect', 'py_time_connect_std',
                    'base_memory', 'base_memory_std',
-               'network_memory', 'network_memory_std',
-               'init_memory', 'init_memory_std',
-               'total_memory', 'total_memory_std',
-               'num_connections', 'num_connections_std',
-               'local_spike_counter', 'local_spike_counter_std']
+                   'network_memory', 'network_memory_std',
+                   'init_memory', 'init_memory_std',
+                   'total_memory', 'total_memory_std',
+                   'num_connections', 'num_connections_std',
+                   'local_spike_counter', 'local_spike_counter_std']
 
         self.df = self.df.drop('rng_seed', axis=1).groupby(
             ['num_nodes',
