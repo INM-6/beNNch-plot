@@ -62,7 +62,8 @@ class Plot():
                  color_params=pp.color_params,
                  additional_params=pp.additional_params,
                  label_params=pp.label_params,
-                 time_scaling=1):
+                 time_scaling=1,
+                 df=None):
 
         self.x_axis = x_axis
         self.x_ticks = x_ticks
@@ -72,6 +73,7 @@ class Plot():
         self.label_params = label_params
         self.time_scaling = time_scaling
 
+        self.df = df
         self.load_data(data_file)
         self.compute_derived_quantities()
 
@@ -90,11 +92,12 @@ class Plot():
         ------
         ValueError
         """
-        try:
-            self.df = pd.read_csv(data_file, delimiter=',')
-        except FileNotFoundError:
-            print('File could not be found')
-            quit()
+        if self.df is None:
+            try:
+                self.df = pd.read_csv(data_file, delimiter=',')
+            except FileNotFoundError:
+                print('File could not be found')
+                quit()
 
         for py_timer in ['py_time_create', 'py_time_connect']:
             if py_timer not in self.df:
@@ -107,27 +110,24 @@ class Plot():
                  'threads_per_task': 'first',
                  'tasks_per_node': 'first',
                  'model_time_sim': 'first',
-                 'wall_time_create': ['mean', 'std'],
-                 'wall_time_connect': ['mean', 'std'],
-                 'wall_time_sim': ['mean', 'std'],
-                 'wall_time_phase_collocate': ['mean', 'std'],
-                 'wall_time_phase_communicate': ['mean', 'std'],
-                 'wall_time_phase_deliver': ['mean', 'std'],
-                 'wall_time_phase_update': ['mean', 'std'],
-                 'wall_time_communicate_target_data': ['mean', 'std'],
-                 'wall_time_gather_spike_data': ['mean', 'std'],
-                 'wall_time_gather_target_data': ['mean', 'std'],
-                 'wall_time_communicate_prepare': ['mean', 'std'],
+                 'time_construction_create': ['mean', 'std'],
+                 'time_construction_connect': ['mean', 'std'],
+                 'time_simulate': ['mean', 'std'],
+                 'time_collocate_spike_data': ['mean', 'std'],
+                 'time_communicate_spike_data': ['mean', 'std'],
+                 'time_deliver_spike_data': ['mean', 'std'],
+                 'time_update': ['mean', 'std'],
+                 'time_communicate_target_data': ['mean', 'std'],
+                 'time_gather_spike_data': ['mean', 'std'],
+                 'time_gather_target_data': ['mean', 'std'],
+                 'time_communicate_prepare': ['mean', 'std'],
                  'py_time_create': ['mean', 'std'],
                  'py_time_connect': ['mean', 'std'],
                  'base_memory': ['mean', 'std'],
                  'network_memory': ['mean', 'std'],
                  'init_memory': ['mean', 'std'],
                  'total_memory': ['mean', 'std'],
-                 'num_connections': ['mean', 'std'],
-                 'local_spike_counter': ['mean', 'std'],
-
-                 }
+                 'num_connections': ['mean', 'std']}
 
         col = ['num_nodes', 'threads_per_task', 'tasks_per_node',
                'model_time_sim', 'wall_time_create',
@@ -152,14 +152,14 @@ class Plot():
                'network_memory', 'network_memory_std',
                'init_memory', 'init_memory_std',
                'total_memory', 'total_memory_std',
-               'num_connections', 'num_connections_std',
-               'local_spike_counter', 'local_spike_counter_std']
+               'num_connections', 'num_connections_std']
 
         self.df = self.df.drop('rng_seed', axis=1).groupby(
             ['num_nodes',
              'threads_per_task',
              'tasks_per_node',
              'model_time_sim'], as_index=False).agg(dict_)
+        print(self.df)
         self.df.columns = col
 
     def compute_derived_quantities(self):
@@ -244,9 +244,9 @@ class Plot():
 
         fill_height = 0
         for fill in fill_variables:
-            axis.fill_between(np.squeeze(self.df[self.x_axis]),
+            axis.fill_between(self.df[self.x_axis].to_numpy().squeeze(axis=1),
                               fill_height,
-                              np.squeeze(self.df[fill]) + fill_height,
+                              self.df[fill].to_numpy() + fill_height,
                               label=self.label_params[fill],
                               facecolor=self.color_params[fill],
                               interpolate=interpolate,
@@ -255,18 +255,17 @@ class Plot():
                               linewidth=0.5,
                               edgecolor='#444444')
             if error:
-                axis.errorbar(np.squeeze(self.df[self.x_axis]),
-                              np.squeeze(self.df[fill]) + fill_height,
-                              yerr=np.squeeze(self.df[fill + '_std']),
+                axis.errorbar(self.df[self.x_axis].to_numpy().squeeze(axis=1),
+                              self.df[fill].to_numpy() + fill_height,
+                              yerr=self.df[fill + '_std'].to_numpy(),
                               capsize=3,
                               capthick=1,
                               color='k',
-                              fmt='none'
-                              )
+                              fmt='none')
             fill_height += self.df[fill].to_numpy()
 
         if self.x_ticks == 'data':
-            axis.set_xticks(np.squeeze(self.df[self.x_axis]))
+            axis.set_xticks(self.df[self.x_axis].to_numpy().squeeze(axis=1))
         else:
             axis.set_xticks(self.x_ticks)
 
@@ -297,17 +296,17 @@ class Plot():
 
         for y in quantities:
             if not error:
-                axis.plot(self.df[self.x_axis],
-                          self.df[y],
+                axis.plot(self.df[self.x_axis].to_numpy().squeeze(axis=1),
+                          self.df[y].to_numpy(),
                           marker=None,
                           label=self.label_params[y],
                           color=self.color_params[y],
                           linewidth=2)
             else:
                 axis.errorbar(
-                    self.df[self.x_axis].values,
-                    self.df[y].values,
-                    yerr=self.df[y + '_std'].values,
+                    self.df[self.x_axis].to_numpy().squeeze(axis=1),
+                    self.df[y].to_numpy(),
+                    yerr=self.df[y + '_std'].to_numpy(),
                     marker=None,
                     capsize=3,
                     capthick=1,
@@ -316,7 +315,7 @@ class Plot():
                     fmt=fmt)
 
         if self.x_ticks == 'data':
-            axis.set_xticks(self.df[self.x_axis].values)
+            axis.set_xticks(self.df[self.x_axis].to_numpy().squeeze(axis=1))
         else:
             axis.set_xticks(self.x_ticks)
 
