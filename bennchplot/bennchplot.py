@@ -110,6 +110,8 @@ class Plot():
                  'threads_per_task': 'first',
                  'tasks_per_node': 'first',
                  'model_time_sim': 'first',
+                 'completion_time': 'first',
+                 'simulator_version': 'first',
                  'time_construction_create': ['mean', 'std'],
                  'time_construction_connect': ['mean', 'std'],
                  'time_simulate': ['mean', 'std'],
@@ -130,8 +132,8 @@ class Plot():
                  'num_connections': ['mean', 'std']}
 
         col = ['num_nodes', 'threads_per_task', 'tasks_per_node',
-               'model_time_sim', 'wall_time_create',
-               'wall_time_create_std', 'wall_time_connect',
+               'model_time_sim', 'completion_time', 'simulator_version'
+               'wall_time_create', 'wall_time_create_std', 'wall_time_connect',
                'wall_time_connect_std', 'wall_time_sim',
                'wall_time_sim_std', 'wall_time_phase_collocate',
                'wall_time_phase_collocate_std', 'wall_time_phase_communicate',
@@ -158,7 +160,9 @@ class Plot():
             ['num_nodes',
              'threads_per_task',
              'tasks_per_node',
-             'model_time_sim'], as_index=False).agg(dict_)
+             'model_time_sim',
+             'completion_time',
+             'simulator_version'], as_index=False).agg(dict_)
         print(self.df)
         self.df.columns = col
 
