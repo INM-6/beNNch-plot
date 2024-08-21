@@ -132,7 +132,7 @@ class Plot():
                  'num_connections': ['mean', 'std']}
 
         col = ['num_nodes', 'threads_per_task', 'tasks_per_node',
-               'model_time_sim', 'completion_time', 'simulator_version'
+               'model_time_sim', 'completion_time', 'simulator_version',
                'wall_time_create', 'wall_time_create_std', 'wall_time_connect',
                'wall_time_connect_std', 'wall_time_sim',
                'wall_time_sim_std', 'wall_time_phase_collocate',
