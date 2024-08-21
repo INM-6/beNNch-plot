@@ -106,7 +106,7 @@ class Plot():
                                  'Construction time measurements will not ' +
                                  'be accurate.')
         
-        df.fillna(0, inplace=True)
+        self.df.fillna(0, inplace=True)
 
         dict_ = {'num_nodes': 'first',
                  'threads_per_task': 'first',
