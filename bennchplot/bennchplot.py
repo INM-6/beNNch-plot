@@ -105,6 +105,8 @@ class Plot():
                 raise ValueError('Warning! Python timers are not found. ' +
                                  'Construction time measurements will not ' +
                                  'be accurate.')
+        
+        df.fillna(0, inplace=True)
 
         dict_ = {'num_nodes': 'first',
                  'threads_per_task': 'first',
