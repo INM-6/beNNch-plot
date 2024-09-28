@@ -163,7 +163,7 @@ class Plot():
              'threads_per_task',
              'tasks_per_node',
              'model_time_sim',
-             'completion_time',
+             'annotation_time',
              'simulator_version'], as_index=False).agg(dict_)
         print(self.df)
         self.df.columns = col
