@@ -18,7 +18,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 """
 Default parameters for plotting
 """
-import tol_colors
+from bennchplot import tol_colors
 
 size_factor = 1.3
 matplotlib_params = {
