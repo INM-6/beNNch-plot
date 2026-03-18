@@ -64,7 +64,7 @@ class Plot():
                  label_params=pp.label_params,
                  time_scaling=1,
                  detailed_timers=True):
-
+        print('start init')
         self.x_axis = x_axis
         self.x_ticks = x_ticks
         self.matplotlib_params = matplotlib_params
@@ -73,10 +73,11 @@ class Plot():
         self.label_params = label_params
         self.time_scaling = time_scaling
         self.detailed_timers = detailed_timers
-
+        print('before load data')
         self.load_data(data_file)
+        print('after load data')
         self.compute_derived_quantities()
-
+        print('after derived quant')
     def load_data(self, data_file):
         """
         Load data to dataframe, to be used later when plotting.
@@ -93,6 +94,7 @@ class Plot():
         ValueError
         """
         try:
+            print('trying to read ' + data_file)
             self.df = pd.read_csv(data_file, delimiter=',')
         except FileNotFoundError:
             print('File could not be found')
@@ -195,13 +197,12 @@ class Plot():
                                  self.df['model_time_sim'].values.flatten())
         self.df['sim_factor_std'] = (self.df['time_simulate']['std'].values /
                                      self.df['model_time_sim'].values.flatten())
+        self.df[('time_construction_create+time_construction_connect','mean')] = (
+            self.df['py_time_create'] + self.df['py_time_connect'])['mean'].values
+        self.df[('time_construction_create+time_construction_connect','std')] = (
+            np.sqrt((self.df['time_construction_create']['std']**2 +
+                     self.df['time_construction_connect']['std']**2)))
         if self.detailed_timers:
-            self.df['time_construction_create+time_construction_connect'] = (
-                self.df['py_time_create'] + self.df['py_time_connect'])
-            self.df['time_construction_create+time_construction_connect_std'] = (
-                np.sqrt((self.df['time_construction_create_std']**2 +
-                         self.df['time_construction_connect_std']**2)))
-
             self.df['time_phase_total'] = (
                 # self.df['time_update_spike_data'] +
                 self.df['time_communicate_spike_data'] +
@@ -263,12 +264,12 @@ class Plot():
         error : bool
             whether plot should have error bars
         """
-
-        fill_height = 0
+        print(np.squeeze(self.df[self.x_axis].values))
+        fill_height = np.zeros(len(np.squeeze(self.df[self.x_axis].values)))
         for fill in fill_variables:
             axis.fill_between(np.squeeze(self.df[self.x_axis]),
                               fill_height,
-                              np.squeeze(self.df[fill]) + fill_height,
+                              self.df[fill]['mean'].values + fill_height,
                               label=self.label_params[fill],
                               facecolor=self.color_params[fill],
                               interpolate=interpolate,
@@ -277,18 +278,20 @@ class Plot():
                               linewidth=0.5,
                               edgecolor='#444444')
             if error:
-                axis.errorbar(np.squeeze(self.df[self.x_axis]),
-                              np.squeeze(self.df[fill]) + fill_height,
-                              yerr=np.squeeze(self.df[fill + '_std']),
+                axis.errorbar(self.df[self.x_axis].values,
+                              self.df[fill]['mean'].values + fill_height,
+                              yerr=self.df[fill]['std'].values,
                               capsize=3,
                               capthick=1,
                               color='k',
                               fmt='none'
                               )
-            fill_height += self.df[fill].to_numpy()
+            print(f'fill_height{fill_height}')
+            print(f'self.df[{fill}]{self.df[fill]["mean"]}')
+            fill_height += self.df[fill]['mean'].values
 
         if self.x_ticks == 'data':
-            axis.set_xticks(np.squeeze(self.df[self.x_axis]))
+            axis.set_xticks(np.squeeze(self.df[self.x_axis].values))
         else:
             axis.set_xticks(self.x_ticks)
 
@@ -338,7 +341,7 @@ class Plot():
                     fmt=fmt)
 
         if self.x_ticks == 'data':
-            axis.set_xticks(self.df[self.x_axis].values)
+            axis.set_xticks(np.squeeze(self.df[self.x_axis].values))
         else:
             axis.set_xticks(self.x_ticks)
 
