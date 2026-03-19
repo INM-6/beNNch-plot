@@ -64,7 +64,6 @@ class Plot():
                  label_params=pp.label_params,
                  time_scaling=1,
                  detailed_timers=True):
-        print('start init')
         self.x_axis = x_axis
         self.x_ticks = x_ticks
         self.matplotlib_params = matplotlib_params
@@ -73,11 +72,8 @@ class Plot():
         self.label_params = label_params
         self.time_scaling = time_scaling
         self.detailed_timers = detailed_timers
-        print('before load data')
         self.load_data(data_file)
-        print('after load data')
         self.compute_derived_quantities()
-        print('after derived quant')
     def load_data(self, data_file):
         """
         Load data to dataframe, to be used later when plotting.
@@ -94,7 +90,6 @@ class Plot():
         ValueError
         """
         try:
-            print('trying to read ' + data_file)
             self.df = pd.read_csv(data_file, delimiter=',')
         except FileNotFoundError:
             print('File could not be found')
@@ -264,7 +259,6 @@ class Plot():
         error : bool
             whether plot should have error bars
         """
-        print(np.squeeze(self.df[self.x_axis].values))
         fill_height = np.zeros(len(np.squeeze(self.df[self.x_axis].values)))
         for fill in fill_variables:
             axis.fill_between(np.squeeze(self.df[self.x_axis]),
@@ -286,8 +280,6 @@ class Plot():
                               color='k',
                               fmt='none'
                               )
-            print(f'fill_height{fill_height}')
-            print(f'self.df[{fill}]{self.df[fill]["mean"]}')
             fill_height += self.df[fill]['mean'].values
 
         if self.x_ticks == 'data':
