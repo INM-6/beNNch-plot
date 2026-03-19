@@ -63,6 +63,7 @@ class Plot():
                  additional_params=pp.additional_params,
                  label_params=pp.label_params,
                  time_scaling=1,
+                 df=None,
                  detailed_timers=True):
         self.x_axis = x_axis
         self.x_ticks = x_ticks
@@ -71,6 +72,7 @@ class Plot():
         self.color_params = color_params
         self.label_params = label_params
         self.time_scaling = time_scaling
+        self.df = df
         self.detailed_timers = detailed_timers
         self.load_data(data_file)
         self.compute_derived_quantities()
@@ -89,11 +91,12 @@ class Plot():
         ------
         ValueError
         """
-        try:
-            self.df = pd.read_csv(data_file, delimiter=',')
-        except FileNotFoundError:
-            print('File could not be found')
-            quit()
+        if self.df is None:
+            try:
+                self.df = pd.read_csv(data_file, delimiter=',')
+            except FileNotFoundError:
+                print('File could not be found')
+                quit()
 
         for py_timer in ['py_time_create', 'py_time_connect']:
             if py_timer not in self.df:
@@ -109,6 +112,13 @@ class Plot():
                  'time_construction_create': ['mean', 'std'],
                  'time_construction_connect': ['mean', 'std'],
                  'time_simulate': ['mean', 'std'],
+                 'time_collocate_spike_data': ['mean', 'std'],
+                 'time_communicate_spike_data': ['mean', 'std'],
+                 'time_deliver_spike_data': ['mean', 'std'],
+                 'time_update': ['mean', 'std'],
+                 'time_communicate_target_data': ['mean', 'std'],
+                 'time_gather_spike_data': ['mean', 'std'],
+                 'time_gather_target_data': ['mean', 'std'],
                  'time_communicate_prepare': ['mean', 'std'],
                  'py_time_create': ['mean', 'std'],
                  'py_time_connect': ['mean', 'std'],
@@ -261,7 +271,7 @@ class Plot():
         """
         fill_height = np.zeros(len(np.squeeze(self.df[self.x_axis].values)))
         for fill in fill_variables:
-            axis.fill_between(np.squeeze(self.df[self.x_axis]),
+            axis.fill_between(self.df[self.x_axis].to_numpy().squeeze(axis=1),
                               fill_height,
                               self.df[fill]['mean'].values + fill_height,
                               label=self.label_params[fill],
@@ -315,17 +325,17 @@ class Plot():
         for y in quantities:
             label = self.label_params[y] if label is None else label
             color = self.color_params[y] if color is None else color
-            axis.plot(self.df[self.x_axis],
-                      self.df[y],
+            axis.plot(self.df[self.x_axis].to_numpy().squeeze(axis=1),
+                      self.df[y].to_numpy(),
                       marker=None,
                       label=label,
                       color=color,
                       linewidth=2)
             if error:
                 axis.errorbar(
-                    self.df[self.x_axis].values,
-                    self.df[y].values,
-                    yerr=self.df[y + '_std'].values,
+                    self.df[self.x_axis].to_numpy().squeeze(axis=1),
+                    self.df[y].to_numpy(),
+                    yerr=self.df[y + '_std'].to_numpy(),
                     marker=None,
                     capsize=3,
                     capthick=1,
