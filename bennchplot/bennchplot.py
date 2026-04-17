@@ -186,13 +186,13 @@ class Plot():
         
         if self.detailed_timers:
             self.df[('time_phase_total', 'mean')] = (
-                # self.df[('time_update_spike_data', 'mean')] +
+                self.df[('time_update', 'mean')] +
                 self.df[('time_communicate_spike_data', 'mean')] +
                 self.df[('time_deliver_spike_data', 'mean')] +
                 self.df[('time_collocate_spike_data', 'mean')])
             self.df[('time_phase_total', 'std')] = \
                 np.sqrt(
-                # self.df[('time_update_spike_data', 'std')]**2 +
+                self.df[('time_update', 'std')]**2 +
                 self.df[('time_communicate_spike_data', 'std')]**2 +
                 self.df[('time_deliver_spike_data', 'std')]**2 +
                 self.df[('time_collocate_spike_data', 'std')]**2
