@@ -115,7 +115,7 @@ class Plot():
                  'time_collocate_spike_data': ['mean', 'std'],
                  'time_communicate_spike_data': ['mean', 'std'],
                  'time_deliver_spike_data': ['mean', 'std'],
-                 'time_update': ['mean', 'std'],
+                 # 'time_update': ['mean', 'std'],
                  'time_communicate_target_data': ['mean', 'std'],
                  'time_gather_spike_data': ['mean', 'std'],
                  'time_gather_target_data': ['mean', 'std'],
